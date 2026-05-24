@@ -10,14 +10,14 @@ import { StoreType } from '../model/store';
 import { PageType } from '../model/page-model';
 
 // Lazy imports for toolbar components to avoid circular deps
-let TextAiWrite: any = () => null;
+// let TextAiWrite: any = () => null;
 let DuplicateButton: any = () => null;
 let RemoveButton: any = () => null;
 let PositionPicker: any = () => null;
 let GroupButton: any = () => null;
 
 try {
-  import('../toolbar/text-ai-write').then((m) => { TextAiWrite = m.TextAiWrite; });
+ // import('../toolbar/text-ai-write').then((m) => { TextAiWrite = m.TextAiWrite; });
   import('../toolbar/duplicate-button').then((m) => { DuplicateButton = m.DuplicateButton; });
   import('../toolbar/remove-button').then((m) => { RemoveButton = m.RemoveButton; });
   import('../toolbar/position-picker').then((m) => { PositionPicker = m.PositionPicker; });
@@ -129,7 +129,7 @@ export const Tooltip = observer(({
   const Lock = components?.Lock || LockPlaceholder;
 
   const firstType = (store as any).selectedElements[0]?.type;
-  const extendedComponents = { TextAiWrite, ...components };
+//  const extendedComponents = { TextAiWrite, ...components };
   const extraItems = extendToolbar({ components: extendedComponents, type: firstType, usedItems: [] });
 
   const transformer = stageRef?.current?.findOne('Transformer');
