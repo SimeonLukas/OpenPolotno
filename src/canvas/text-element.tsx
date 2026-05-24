@@ -259,18 +259,32 @@ const TextareaOverlay = observer(
       };
     }, []);
 
+    // Track whether this is the first render (entering edit mode)
+    const isFirstRender = React.useRef(true);
+
     // Auto-resize textarea AND sync new height back to the Polotno model
     React.useEffect(() => {
       const el = textareaRef.current;
       if (!el) return;
 
-      // Shrink first so scrollHeight reflects actual content
-      el.style.height = 'auto';
-      const newH = el.scrollHeight;
-      el.style.height = newH + 'px';
+      // On first render (double-click to enter edit mode), never shrink:
+      // use the current model height as the minimum.
+      const currentModelHeight = (element as any).a.height;
 
-      // Push the new height into the model so the Konva text node resizes too
-      if (newH > 0) {
+      // Measure natural scroll height
+      el.style.height = 'auto';
+      const scrollH = el.scrollHeight;
+
+      // Never go below the model height (prevents shrink on double-click)
+      const newH = isFirstRender.current
+        ? Math.max(scrollH, currentModelHeight)
+        : scrollH;
+
+      el.style.height = newH + 'px';
+      isFirstRender.current = false;
+
+      // Only push upward changes to the model (text grew → element grows)
+      if (newH > currentModelHeight) {
         (element as any).set({ height: newH });
       }
     }, [plainText]);
