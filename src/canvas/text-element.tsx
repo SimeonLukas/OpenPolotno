@@ -198,6 +198,9 @@ const TextareaOverlay = observer(
     const [textareaStyle, setTextareaStyle] = React.useState(BASE_TEXTAREA_STYLE);
     const textNode = textNodeRef.current;
 
+    // Derive plainText first so all effects below can reference it
+    const plainText = removeTags((element as any).text);
+
     React.useLayoutEffect(() => {
       if (!textNode) return;
       const newStyle: Record<string, any> = {};
@@ -256,14 +259,21 @@ const TextareaOverlay = observer(
       };
     }, []);
 
+    // Auto-resize textarea AND sync new height back to the Polotno model
     React.useEffect(() => {
-  const el = textareaRef.current;
-  if (!el) return;
-  
-  // Auto-resize textarea based on content
-  el.style.height = 'auto';
-  el.style.height = (el.scrollHeight) + 'px';
-}, [plainText]); // Update whenever plainText changes
+      const el = textareaRef.current;
+      if (!el) return;
+
+      // Shrink first so scrollHeight reflects actual content
+      el.style.height = 'auto';
+      const newH = el.scrollHeight;
+      el.style.height = newH + 'px';
+
+      // Push the new height into the model so the Konva text node resizes too
+      if (newH > 0) {
+        (element as any).set({ height: newH });
+      }
+    }, [plainText]);
 
     const textLines = (textNode as any)?.textArr || [];
     const lineCount = textLines.length;
@@ -277,8 +287,6 @@ const TextareaOverlay = observer(
     } else if ((element as any).verticalAlign === 'bottom') {
       paddingTop = (element as any).a.height - totalTextHeight;
     }
-
-    const plainText = removeTags((element as any).text);
 
     return React.createElement('textarea', {
       className: 'raeditor-input',
@@ -321,8 +329,6 @@ export const TextElement = observer(({ element, store }: ShapeProps) => {
   const isSelected = store.selectedShapes.indexOf(element as any) >= 0 && element.selectable;
   const isSelectable = element.selectable || (store as any).role === 'admin';
 
-  // Edit mode management
-  const isTransforming_unused = false; // Kept to not change hook order if needed, but better remove
   const [isTransforming, setIsTransforming] = React.useState(false);
   const cursorPosRef = React.useRef<number | null>(null);
   const prevHeightRef = React.useRef(0);
@@ -347,9 +353,7 @@ export const TextElement = observer(({ element, store }: ShapeProps) => {
     );
   }, []);
 
-  // Sync Konva's auto-calculated text height back to the model when height is 0 (newly added element).
-  // Must use getHeight() — Konva's Text-specific getter that handles auto-size (height=undefined).
-  // The generic height() / attrs.height would return 0 for newly created elements.
+  // Sync Konva height → model when font loads (newly added element with height 0)
   React.useLayoutEffect(() => {
     if (!textRef.current || (element as any).height !== 0) return;
     const actualHeight = textRef.current.getHeight();
@@ -357,6 +361,21 @@ export const TextElement = observer(({ element, store }: ShapeProps) => {
       (element as any).set({ height: actualHeight });
     }
   }, [fontLoaded]);
+
+  // Sync Konva height → model whenever text changes outside edit mode.
+  // This ensures the canvas element grows when lines are added programmatically.
+  React.useLayoutEffect(() => {
+    if (!textRef.current || element._editModeEnabled) return;
+    // Wait one frame for Konva to re-measure
+    const raf = requestAnimationFrame(() => {
+      if (!textRef.current || !isAlive(element)) return;
+      const konvaH = textRef.current.getHeight();
+      if (konvaH > 0 && konvaH !== (element as any).a.height) {
+        (element as any).set({ height: konvaH });
+      }
+    });
+    return () => cancelAnimationFrame(raf);
+  }, [plainText, lineHeightVal, (element as any).a.fontSize, (element as any).a.width]);
 
   useFadeIn(textRef, (element as any).a.opacity);
 
