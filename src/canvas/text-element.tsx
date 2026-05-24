@@ -256,6 +256,15 @@ const TextareaOverlay = observer(
       };
     }, []);
 
+    React.useEffect(() => {
+  const el = textareaRef.current;
+  if (!el) return;
+  
+  // Auto-resize textarea based on content
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight) + 'px';
+}, [plainText]); // Update whenever plainText changes
+
     const textLines = (textNode as any)?.textArr || [];
     const lineCount = textLines.length;
     const lineHeightVal = (textNode as any)?.lineHeight?.() || 1;
