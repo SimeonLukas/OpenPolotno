@@ -64,7 +64,7 @@ export const RaeditorApp = ({ store, style, sections }: { store: StoreType; styl
       React.createElement(SidePanel, { store, sections: resolvedSections })
     ),
     React.createElement(WorkspaceWrap, { 'data-tour': 'canvas' } as any,
-      React.createElement(Toolbar, { store, components: { ActionControls: () => React.createElement(DownloadButton, { store }) } }),
+      React.createElement(Toolbar, { store }),
       React.createElement(Workspace, { store }),
       React.createElement(ZoomButtons, { store })
     ),
