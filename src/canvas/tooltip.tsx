@@ -10,14 +10,13 @@ import { StoreType } from '../model/store';
 import { PageType } from '../model/page-model';
 
 // Lazy imports for toolbar components to avoid circular deps
-// let TextAiWrite: any = () => null;
+// TextAiWrite intentionally excluded
 let DuplicateButton: any = () => null;
 let RemoveButton: any = () => null;
 let PositionPicker: any = () => null;
 let GroupButton: any = () => null;
 
 try {
- // import('../toolbar/text-ai-write').then((m) => { TextAiWrite = m.TextAiWrite; });
   import('../toolbar/duplicate-button').then((m) => { DuplicateButton = m.DuplicateButton; });
   import('../toolbar/remove-button').then((m) => { RemoveButton = m.RemoveButton; });
   import('../toolbar/position-picker').then((m) => { PositionPicker = m.PositionPicker; });
@@ -25,6 +24,8 @@ try {
 } catch (_) {}
 
 const LockPlaceholder = () => null;
+// Stub that renders nothing – replaces TextAiWrite everywhere
+const TextAiWriteStub = () => null;
 
 function findAncestorWithClass(el: HTMLElement | null, className: string): HTMLElement | null {
   if (!el) return null;
@@ -48,8 +49,7 @@ export const Tooltip = observer(({
   const [isTransforming, setIsTransforming] = React.useState(false);
   const hasCroppedImages = (store as any)._hasCroppedImages;
 
-  // Track drag/transform state
-  (store as any).selectedElements.length; // observe
+  (store as any).selectedElements.length;
   React.useEffect(() => {
     const stage = stageRef?.current;
     if (!stage) return;
@@ -68,7 +68,6 @@ export const Tooltip = observer(({
     };
   }, []);
 
-  // Fit/position state
   const [position, setPosition] = React.useState({ fit: true, needCalculate: false, token: Math.random() });
 
   function checkFit() {
@@ -100,7 +99,6 @@ export const Tooltip = observer(({
     return () => cancelAnimationFrame(raf);
   }, [position.needCalculate, tooltipRef.current, position.token]);
 
-  // Scroll listener
   React.useEffect(() => {
     if (!stageRef?.current) return;
     const inner = findAncestorWithClass(stageRef.current.content, 'raeditor-workspace-inner');
@@ -129,7 +127,8 @@ export const Tooltip = observer(({
   const Lock = components?.Lock || LockPlaceholder;
 
   const firstType = (store as any).selectedElements[0]?.type;
-//  const extendedComponents = { TextAiWrite, ...components };
+  // Always use the stub – TextAiWrite never appears in the toolbar
+  const extendedComponents = { TextAiWrite: TextAiWriteStub, ...components, TextAiWrite: TextAiWriteStub };
   const extraItems = extendToolbar({ components: extendedComponents, type: firstType, usedItems: [] });
 
   const transformer = stageRef?.current?.findOne('Transformer');
