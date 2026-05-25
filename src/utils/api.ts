@@ -1,6 +1,6 @@
 import { getKey } from './validate-key';
 
-export const URL_BASE = 'http://127.0.0.1';
+export const URL_BASE = window.location.origin;
 export const API = `${URL_BASE}:3001/api`;
 export const ASSETS_BASE = `${URL_BASE}:3001`;
 export const getAPI = () => URL_BASE + ':3001/api';
