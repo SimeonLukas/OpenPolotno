@@ -1,8 +1,9 @@
 import { getKey } from './validate-key';
 
-export const URL_BASE = 'https://api.polotno.com';
-export const API = `${URL_BASE}/api`;
-export const getAPI = () => URL_BASE + '/api';
+export const URL_BASE = 'http://127.0.0.1';
+export const API = `${URL_BASE}:3001/api`;
+export const ASSETS_BASE = `${URL_BASE}:3001`;
+export const getAPI = () => URL_BASE + ':3001/api';
 
 const _warnedOnce: Record<string, boolean> = {};
 const warnOnce = (key: string, message: string) => {
@@ -29,7 +30,7 @@ export const URLS: Record<string, (...args: any[]) => string> = {
   nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}&KEY=${getKey()}`,
   templateList: ({ query, page = 1, sizeQuery }) => `${getAPI()}/get-templates?${sizeQuery}&query=${query}&per_page=30&page=${page}&KEY=${getKey()}`,
   googleFontsList: () => `${getAPI()}/get-google-fonts?KEY=${getKey()}`,
-  googleFontImage: (name: string) => `${URL_BASE}/google-fonts-previews/black/${name.replace(/ /g, '-')}.png`,
+  googleFontImage: (name: string) => `${ASSETS_BASE}/google-fonts-previews/black/${name.replace(/ /g, '-')}.png`,
   textTemplateList: () => `${getAPI()}/get-text-templates?KEY=${getKey()}`,
   removeBackground: () => `${getAPI()}/remove-image-background?KEY=${getKey()}`,
   aiText: () => `${getAPI()}/ai/text?KEY=${getKey()}`,
