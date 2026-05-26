@@ -2,13 +2,18 @@ import * as mobx from 'mobx';
 
 const _defaults = {
   imageDownScalingEnabled: true,
+<<<<<<< HEAD
+  removeBackgroundEnabled: true,
+  htmlRenderEnabled: false,
+=======
   removeBackgroundEnabled: false,
   htmlRenderEnabled: true,
+>>>>>>> parent of 503af47 (update)
   forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
   textOverflow: 'resize' as string,
   textSplitAllowed: false,
-  animationsEnabled: true,
+  animationsEnabled: false,
 };
 
 type FlagsType = typeof _defaults;
