@@ -2,16 +2,11 @@ import * as mobx from 'mobx';
 
 const _defaults = {
   imageDownScalingEnabled: true,
-<<<<<<< HEAD
-  removeBackgroundEnabled: true,
-  htmlRenderEnabled: false,
-=======
   removeBackgroundEnabled: false,
-  htmlRenderEnabled: true,
->>>>>>> parent of 503af47 (update)
+  htmlRenderEnabled: false,
   forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
-  textOverflow: 'change-font-size' as string,
+  textOverflow: 'resize' as string,
   textSplitAllowed: false,
   animationsEnabled: false,
 };
