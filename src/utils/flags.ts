@@ -4,9 +4,9 @@ const _defaults = {
   imageDownScalingEnabled: true,
   removeBackgroundEnabled: false,
   htmlRenderEnabled: true,
-  forceTextFitEnabled: true,
+  forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
-  textOverflow: 'resize' as string,
+  textOverflow: 'change-font-size' as string,
   textSplitAllowed: false,
   animationsEnabled: true,
 };
