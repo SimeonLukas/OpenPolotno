@@ -284,7 +284,7 @@ const TextareaOverlay = observer(
       isFirstRender.current = false;
 
       // Only push upward changes to the model (text grew → element grows)
-if (newH > currentModelHeight) {
+     if (newH !== currentModelHeight) {
   (element as any).set({ height: newH });
 }
     }, [plainText]);
