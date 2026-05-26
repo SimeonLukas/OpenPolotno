@@ -205,10 +205,10 @@ const TextareaOverlay = observer(
       if (!textNode) return;
       const newStyle: Record<string, any> = {};
       newStyle.width = textNode.width() - 2 * textNode.padding() + 'px';
-      const konvaFontSize = textNode.fontSize?.() ?? (element as any).a.fontSize;
-newStyle.fontSize = konvaFontSize + 'px';
-newStyle.height =
-  textNode.height() - 2 * textNode.padding() + konvaFontSize * textNode.lineHeight() + 'px';
+      const actualFontSize = textNode.fontSize?.() ?? (element as any).a.fontSize;
+      newStyle.fontSize = actualFontSize + 'px';
+      newStyle.height =
+      textNode.height() - 2 * textNode.padding() + actualFontSize * textNode.lineHeight() + 'px';
       newStyle.lineHeight = textNode.lineHeight() + 0.01;
       newStyle.fontFamily = textNode.fontFamily();
       newStyle.textAlign = textNode.align();
@@ -310,7 +310,12 @@ newStyle.height =
       style: { ...BASE_TEXTAREA_STYLE, ...textareaStyle, paddingTop: paddingTop + 'px' },
       value: plainText,
       onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-          (element as any).set({ text: e.target.value });
+        const newFontSize = getLimitedFontSize({
+          oldText: (element as any).text,
+          newText: e.target.value,
+          element,
+        });
+        (element as any).set({ text: e.target.value, fontSize: newFontSize });
       },
       placeholder: (element as any).placeholder,
       onBlur,
