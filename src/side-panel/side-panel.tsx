@@ -29,6 +29,9 @@ import { ImageClipPanel } from './image-clip-panel';
 import { AnimationsPanel } from './animations-panel';
 import { EffectsPanel } from './effects-panel';
 import { HistoryPanel } from './history-panel';
+import { IconsPanel } from './icons-panel';
+import FaStar from '@meronex/icons/fa/FaStar';
+
 
 export const TemplatesSection = {
   name: 'templates',
@@ -92,6 +95,19 @@ export const HistorySection = {
   ),
   Panel: ({ store }: any) => React.createElement(HistoryPanel, { store }),
 };
+export const IconsSection = {
+  name: 'icons',
+  Tab: observer((props: any) =>
+    React.createElement(
+      SectionTab,
+      Object.assign({ name: 'Icons', iconSize: 16 }, props),
+      React.createElement('span', { className: 'bp5-icon' },
+        React.createElement(FaStar, null)
+      )
+    )
+  ),
+  Panel: ({ store }: any) => React.createElement(IconsPanel, { store }),
+};
 export const SizeSection = {
   name: 'size',
   Tab: observer((props: any) => React.createElement(SectionTab, Object.assign({ name: s('sidePanel.resize') }, props), React.createElement(Icon, { icon: React.createElement(Fullscreen, null) }))),
@@ -116,6 +132,7 @@ export const DEFAULT_SECTIONS = [
   LayersSection,
   HistorySection,
   SizeSection,
+  IconsSection, 
 ];
 
 const ImageClipSection = { name: 'image-clip', Tab: () => null, Panel: ImageClipPanel };
