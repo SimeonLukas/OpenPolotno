@@ -73,6 +73,7 @@ const defaultImageComponents: Record<string, any> = {
   ImageFitToBackground,
   ImageCrop,
   ImageClip,
+  ImageRemoveBackground,
   ImageAnimations: AnimationsPicker,
 };
 

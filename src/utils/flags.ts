@@ -2,13 +2,13 @@ import * as mobx from 'mobx';
 
 const _defaults = {
   imageDownScalingEnabled: true,
-  removeBackgroundEnabled: true,
-  htmlRenderEnabled: false,
+  removeBackgroundEnabled: false,
+  htmlRenderEnabled: true,
   forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
   textOverflow: 'resize' as string,
   textSplitAllowed: false,
-  animationsEnabled: false,
+  animationsEnabled: true,
 };
 
 type FlagsType = typeof _defaults;
