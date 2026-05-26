@@ -468,6 +468,7 @@ export const setLanguage = action((lang: Lang) => {
   mergeDeep(translations, deepClone(LANGUAGES.en));
   mergeDeep(translations, base);
   localStorage.setItem('op_lang', lang);
+  window.location.reload();
 });
 
 export function getSavedLang(): Lang {
