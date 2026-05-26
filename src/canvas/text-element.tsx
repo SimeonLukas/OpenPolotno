@@ -205,9 +205,10 @@ const TextareaOverlay = observer(
       if (!textNode) return;
       const newStyle: Record<string, any> = {};
       newStyle.width = textNode.width() - 2 * textNode.padding() + 'px';
+      const actualFontSize = textNode.fontSize?.() ?? (element as any).a.fontSize;
+      newStyle.fontSize = actualFontSize + 'px';
       newStyle.height =
-        textNode.height() - 2 * textNode.padding() + textNode.fontSize() * textNode.lineHeight() + 'px';
-      newStyle.fontSize = textNode.fontSize() + 'px';
+      textNode.height() - 2 * textNode.padding() + actualFontSize * textNode.lineHeight() + 'px';
       newStyle.lineHeight = textNode.lineHeight() + 0.01;
       newStyle.fontFamily = textNode.fontFamily();
       newStyle.textAlign = textNode.align();
