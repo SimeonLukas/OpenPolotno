@@ -6,7 +6,7 @@ const _defaults = {
   htmlRenderEnabled: true,
   forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
-  textOverflow: 'change-font-size' as string,
+  textOverflow: 'resize' as string,
   textSplitAllowed: false,
   animationsEnabled: true,
 };
