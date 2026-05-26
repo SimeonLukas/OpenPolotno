@@ -4,7 +4,7 @@ const _defaults = {
   imageDownScalingEnabled: true,
   removeBackgroundEnabled: false,
   htmlRenderEnabled: true,
-  forceTextFitEnabled: false,
+  forceTextFitEnabled: true,
   textVerticalResizeEnabled: false,
   textOverflow: 'resize' as string,
   textSplitAllowed: false,
