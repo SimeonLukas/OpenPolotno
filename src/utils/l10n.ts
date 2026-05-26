@@ -501,3 +501,12 @@ export const t = (key: string): string => {
   const last = parts[parts.length - 1] || ' ';
   return last.charAt(0).toUpperCase() + last.slice(1);
 };
+
+
+// ── Beim Start gespeicherte Sprache sofort anwenden ──────────────────────────
+;(() => {
+  const saved = typeof localStorage !== 'undefined' ? localStorage.getItem('op_lang') as Lang : null;
+  if (saved && saved !== 'de' && LANGUAGES[saved]) {
+    mergeDeep(translations, deepClone(LANGUAGES[saved]));
+  }
+})();
