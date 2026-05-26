@@ -11,7 +11,7 @@ const _defaults = {
 >>>>>>> parent of 503af47 (update)
   forceTextFitEnabled: false,
   textVerticalResizeEnabled: false,
-  textOverflow: 'change-font-size' as string,
+  textOverflow: 'resize' as string,
   textSplitAllowed: false,
   animationsEnabled: false,
 };
