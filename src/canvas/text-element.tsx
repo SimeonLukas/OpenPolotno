@@ -205,17 +205,10 @@ const TextareaOverlay = observer(
       if (!textNode) return;
       const newStyle: Record<string, any> = {};
       newStyle.width = textNode.width() - 2 * textNode.padding() + 'px';
-<<<<<<< HEAD
       const actualFontSize = textNode.fontSize?.() ?? (element as any).a.fontSize;
       newStyle.fontSize = actualFontSize + 'px';
       newStyle.height =
       textNode.height() - 2 * textNode.padding() + actualFontSize * textNode.lineHeight() + 'px';
-=======
-      const konvaFontSize = textNode.fontSize?.() ?? (element as any).a.fontSize;
-newStyle.fontSize = konvaFontSize + 'px';
-newStyle.height =
-  textNode.height() - 2 * textNode.padding() + konvaFontSize * textNode.lineHeight() + 'px';
->>>>>>> parent of ad86790 (update)
       newStyle.lineHeight = textNode.lineHeight() + 0.01;
       newStyle.fontFamily = textNode.fontFamily();
       newStyle.textAlign = textNode.align();
