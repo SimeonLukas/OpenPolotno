@@ -4,7 +4,7 @@ const _defaults = {
   imageDownScalingEnabled: true,
   removeBackgroundEnabled: false,
   htmlRenderEnabled: false,
-  forceTextFitEnabled: false,
+  forceTextFitEnabled: true,
   textVerticalResizeEnabled: false,
   textOverflow: 'change-font-size' as string,
   textSplitAllowed: false,
@@ -55,9 +55,9 @@ export const useDownScaling = mobx.action((value: boolean) => {
 });
 
 /** @deprecated Use setTextOverflow instead */
-export const setForceTextFit = mobx.action((_value: boolean) => {
+export const setForceTextFit = mobx.action((value: boolean) => {
   console.warn('setForceTextFit is deprecated. Use setTextOverflow instead.');
-  flags.textOverflow = 'change-font-size';
+  flags.textOverflow = value ? 'change-font-size' : 'wrap';
 });
 
 export const setTextOverflow = mobx.action((value: string) => {
