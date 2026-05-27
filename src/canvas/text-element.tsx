@@ -16,7 +16,7 @@ import { applyFilter } from './apply-filters';
 import { useFadeIn } from './use-fadein';
 import { isTouchDevice } from '../utils/screen';
 import { isAlive } from 'mobx-state-tree';
-import { getLimitedFontSize } from './text-element/max-font-size';
+import { getLimitedFontSize, getFittedFontSize } from './text-element/max-font-size';
 import { getOptimalCaretColor } from './text-element/caret-color';
 import { StoreType } from '../model/store';
 import { TextElementType } from '../model/text-model';
@@ -372,20 +372,68 @@ export const TextElement = observer(({ element, store }: ShapeProps) => {
     }
   }, [fontLoaded]);
 
-  // Sync Konva height → model whenever text changes outside edit mode.
-  // This ensures the canvas element grows when lines are added programmatically.
+  // ─── Auto-fit text to fixed box ────────────────────────────────────────────
+  //
+  // When flags.textOverflow === 'change-font-size' (the default), the box
+  // dimensions are treated as fixed and we binary-search for the largest font
+  // size that makes the text fit entirely inside the box.
+  //
+  // For any other textOverflow mode the original behaviour is preserved:
+  // the Konva-measured height is written back to the model so the box grows.
+  //
+  // We intentionally do NOT include `(element as any).a.fontSize` in the deps
+  // array to avoid a re-render loop (we're the ones writing fontSize).
+  // `fontLoaded` is included so the measurement reruns with the correct glyphs.
+  // ───────────────────────────────────────────────────────────────────────────
   React.useLayoutEffect(() => {
-    if (!textRef.current || element._editModeEnabled) return;
-    // Wait one frame for Konva to re-measure
+    if (element._editModeEnabled) return;
+
     const raf = requestAnimationFrame(() => {
-      if (!textRef.current || !isAlive(element)) return;
-      const konvaH = textRef.current.getHeight();
-      if (konvaH > 0 && konvaH !== (element as any).a.height) {
-        (element as any).set({ height: konvaH });
+      if (!isAlive(element)) return;
+
+      if ((flags as any).textOverflow === 'change-font-size') {
+        // Nothing to fit if the box has no size yet.
+        const boxW = (element as any).a.width;
+        const boxH = (element as any).a.height;
+        if (!plainText || boxW <= 0 || boxH <= 0) return;
+
+        const fitted = getFittedFontSize({
+          text: plainText,
+          width: boxW,
+          height: boxH,
+          fontFamily: (element as any).fontFamily,
+          lineHeight: lineHeightVal,
+          fontStyle: `${(element as any).fontStyle} ${(element as any).fontWeight}`.trim(),
+          letterSpacingEm: (element as any).letterSpacing,
+          // Never exceed the original / design font size so a short text
+          // doesn't blow up beyond what was intended.
+          maxFontSize: (element as any).a.fontSize,
+        });
+
+        if (fitted !== (element as any).a.fontSize) {
+          (element as any).set({ fontSize: fitted });
+        }
+      } else {
+        // Legacy behaviour: grow the box to fit the text.
+        if (!textRef.current) return;
+        const konvaH = textRef.current.getHeight();
+        if (konvaH > 0 && konvaH !== (element as any).a.height) {
+          (element as any).set({ height: konvaH });
+        }
       }
     });
+
     return () => cancelAnimationFrame(raf);
-  }, [plainText, lineHeightVal, (element as any).a.fontSize, (element as any).a.width]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    plainText,
+    lineHeightVal,
+    fontLoaded,
+    (element as any).a.width,
+    (element as any).a.height,
+    // NOTE: intentionally omitting (element as any).a.fontSize to break
+    // the potential write → re-render loop.
+  ]);
 
   useFadeIn(textRef, (element as any).a.opacity);
 
