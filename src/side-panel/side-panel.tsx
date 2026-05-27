@@ -155,6 +155,7 @@ const SidePanelContainer = styled('div')`
     height: auto !important;
     width: 100%;
     position: relative;
+    flex-direction: column-reverse;
   `)}
 `;
 
@@ -167,6 +168,9 @@ const TabsScrollContainer = styled('div', React.forwardRef)`
   ${mobileStyle(`
     width: 100%;
     overflow: auto;
+    display: flex;
+    flex-direction: row;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
   `)}
 `;
 
@@ -177,6 +181,8 @@ const TabsList = styled('div', React.forwardRef)`
   ${mobileStyle(`
     flex-direction: row;
     min-width: min-content;
+    width: 100%;
+    justify-content: space-around;
   `)}
 `;
 
@@ -194,11 +200,19 @@ const PanelContainer = styled('div')`
 
   ${mobileStyle(`
     &.bp5-navbar {
-      position: absolute;
-      bottom: 54px;
+      position: relative;
+      bottom: auto;
       z-index: 100;
       height: 50vh !important;
       width: 100%;
+      max-height: calc(100vh - 200px);
+      overflow-y: auto;
+      border-top: 1px solid rgba(0, 0, 0, 0.1);
+      border-radius: 12px 12px 0 0;
+    }
+    
+    &.bp5-navbar.collapsed {
+      display: none;
     }
   `)}
 `;
@@ -207,12 +221,14 @@ const MobileOverlay = styled('div')`
   display: none;
 
   ${mobileStyle(`
-    position: absolute;
-    bottom: 72px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
     display: block;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: transparent;
+    z-index: 99;
   `)}
 `;
 
@@ -278,7 +294,7 @@ const CollapseHandle = ({ onClick }: any) =>
       { width: '15', height: '96', viewBox: '0 0 16 96', xmlns: 'http://www.w3.org/2000/svg' },
       React.createElement('path', {
         className: 'fill stroke',
-        d: 'M 1 7 C 2 9 4 10 7.2 13.28 C 7.45 13.4625 7.6 13.6 7.7 13.8048 L 7.8 13.8 C 9.8 15.8 11.6 17.6 12.9 19.7 C 14 21.6 14.7 23.9 14.9 27 H 15 V 68 C 15 71.7 14.3 74.3 13 76.6 C 11.7 78.8 9.9 80.5 7.8 82.6344 L 7.79 82.6 C 7.6 82.8 7.4507 83 7.2729 83.2127 C 3.9102 86.5228 2 87 1 90',
+        d: 'M 1 7 C 2 9 4 10 7.2 13.28 C 7.45 13.4625 7.6 13.6 7.7 13.8048 L 7.8 13.8 C 9.8 15.8 11.6 17.6 12.9 19.7 C 14 21.6 14.7 23.9 14.9 27 H 15 V 68 C 15 71.7 14.3 74.3 13 76.6 C 11.7 78.8 9.8 80.6 7.8 82.4 L 7.6 82.2 C 7.5 82.3 7.4 82.5 7.2 82.6 C 4.1 85.8 2 87 1 89 L 1 7',
       })
     ),
     React.createElement('div', { className: 'pointer' }, '<')
