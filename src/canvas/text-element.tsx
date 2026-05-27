@@ -16,7 +16,7 @@ import { applyFilter } from './apply-filters';
 import { useFadeIn } from './use-fadein';
 import { isTouchDevice } from '../utils/screen';
 import { isAlive } from 'mobx-state-tree';
-import { getLimitedFontSize } from './text-element/max-font-size';
+import { getLimitedFontSize, fitFontSize } from './text-element/max-font-size';
 import { getOptimalCaretColor } from './text-element/caret-color';
 import { StoreType } from '../model/store';
 import { TextElementType } from '../model/text-model';
@@ -309,9 +309,18 @@ const TextareaOverlay = observer(
       dir: getDir(plainText),
       style: { ...BASE_TEXTAREA_STYLE, ...textareaStyle, paddingTop: paddingTop + 'px' },
       value: plainText,
-      onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-          (element as any).set({ text: e.target.value });
-      },
+     onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const newText = e.target.value;
+  (element as any).set({ text: newText });
+
+  // Live font-size anpassen wenn textOverflow === 'change-font-size'
+  if ((flags as any).textOverflow === 'change-font-size' && newText.trim()) {
+    const newSize = fitFontSize(newText, element);
+    if (newSize !== (element as any).a.fontSize) {
+      (element as any).set({ fontSize: newSize });
+    }
+  }
+},
       placeholder: (element as any).placeholder,
       onBlur,
     });

@@ -38,7 +38,7 @@ function svgToUrl(svgStr: string, size = 100): string {
   const sized = svgStr
     .replace(/width="[^"]*"/, `width="${size}"`)
     .replace(/height="[^"]*"/, `height="${size}"`);
-  return URL.createObjectURL(new Blob([sized], { type: 'image/svg+xml' }));
+  return `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(sized)))}`;
 }
 
 export const IconsPanel = ({ store }: { store: StoreType }) => {
