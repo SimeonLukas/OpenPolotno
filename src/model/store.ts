@@ -28,7 +28,14 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
-import { Output, BufferTarget, Mp4OutputFormat, CanvasSource, VideoSampleSource, VideoSample } from 'mediabunny';
+import {
+  Output,
+  BufferTarget,
+  Mp4OutputFormat,
+  VideoSampleSource,
+  VideoSample,
+  QUALITY_HIGH,
+} from 'mediabunny';
 
 setLivelinessChecking('ignore');
 
@@ -843,25 +850,22 @@ async exportVideo({
 
   const target = new BufferTarget();
   const output = new Output({
-    format: new Mp4OutputFormat({
-      fastStart: 'in-memory',
-    }),
+    format: new Mp4OutputFormat({ fastStart: 'in-memory' }),
     target,
   });
 
-  // ✅ Korrekte Mediabunny-Usage mit VideoSampleSource
+  // ✅ Korrekte VideoSource mit Mediabunny
   const videoSource = new VideoSampleSource({
-    codec: 'avc', // nicht 'avc1.42001f', sondern Kurzform
+    codec: 'avc',
     bitrate,
     width,
     height,
     frameRate: fps,
-    alpha: 'discard',
   });
 
-  const track = output.addVideoTrack(videoSource, {
-    frameRate: fps,
-  });
+  output.addVideoTrack(videoSource);
+
+  await output.start();
 
   for (let i = 0; i < frameCount; i++) {
     const time = i * frameDelay;
@@ -882,7 +886,7 @@ async exportVideo({
       _skipTimeout: true,
     });
 
-    // ✅ VideoSample aus Canvas erstellen
+    // ✅ VideoFrame aus Canvas erstellen
     const bitmap = await createImageBitmap(frameCanvas);
     const videoFrame = new VideoFrame(bitmap, {
       timestamp: Math.round(time * 1000),
@@ -892,15 +896,21 @@ async exportVideo({
     bitmap.close();
     Konva.Util.releaseCanvas(frameCanvas);
 
-    // ✅ VideoSample anstelle von VideoFrame verwenden
-    const videoSample: VideoSample = videoFrame;
-    await videoSource.add(videoSample, { keyFrame: i % (fps * 2) === 0 });
+    // ✅ VideoFrame in VideoSample konvertieren (WICHTIG!) [web:54]
+    const videoSample = new VideoSample(videoFrame);
+
+    // ✅ VideoSample mit Timestamp in Sekunden (nicht Millisekunden!) [web:54]
+    await videoSource.add(videoSample, {
+      timestamp: time, // Sekunden, nicht Millisekunden!
+      duration: frameDelay / 1000, // Sekunden
+      keyFrame: i % (fps * 2) === 0,
+    });
 
     videoFrame.close();
+    videoSample.close(); // ✅ VideoSample nach Verwendung schließen [web:52]
   }
 
-  await videoSource.close();
-  await output.start();
+  await videoSource.end();
   await output.finalize();
   (self as any).stop();
 
