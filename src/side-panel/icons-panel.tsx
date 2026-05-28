@@ -17,8 +17,7 @@ const BOX_ICON_NAMES: string[] = [
   'bx-cart', 'bx-credit-card', 'bx-bar-chart', 'bx-pie-chart',
   'bx-like', 'bx-bookmark', 'bx-flag', 'bx-tag', 'bx-trophy',
   'bx-gift', 'bx-diamond', 'bx-crown', 'bx-rocket', 'bx-shield',
-  'bx-key', 'bx-wifi', 'bx-sun', 'bx-moon', 'bx-cloud',
-  'bx-tree', 'bx-leaf', 'bx-church', 'bx-cross', 'bx-pray',
+  'bx-key', 'bx-wifi', 'bx-sun', 'bx-moon', 'bx-cloud', 'bx-leaf', 'bx-church', 'bx-cross',
 ];
 
 async function fetchBoxSvg(name: string): Promise<string> {
