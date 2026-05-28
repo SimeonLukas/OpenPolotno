@@ -28,7 +28,6 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
-import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
 
 setLivelinessChecking('ignore');
 
@@ -801,64 +800,52 @@ async exportVideo({
   fileName,
   fps = 30,
   pixelRatio = 1,
-  bitrate = 8_000_000,
 }: {
   fileName?: string;
   fps?: number;
   pixelRatio?: number;
-  bitrate?: number;
 } = {}) {
-  const width = Math.round(self.width * pixelRatio);
-  const height = Math.round(self.height * pixelRatio);
+  const canvas = document.createElement('canvas');
+  canvas.width = self.width * pixelRatio;
+  canvas.height = self.height * pixelRatio;
+  const ctx = canvas.getContext('2d')!;
+
+  const stream = canvas.captureStream(fps);
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+  const chunks: Blob[] = [];
+
+  recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+  recorder.start();
+
   const frameDelay = 1000 / fps;
   const frameCount = Math.ceil((self as any).duration / frameDelay);
 
+  // Hilfsfunktion: alle <video>-Elemente im Stage finden und seeken
   const seekAllVideos = async (timeMs: number) => {
     const pageId = (self as any).activePage?.id;
     const stages = Konva.stages.filter((s: any) => s.getAttr('pageId') === pageId);
     if (!stages.length) return;
 
-    const videos = (stages[0].find('Image') as any[])
+    const videoNodes = stages[0].find('Image') as any[];
+    const seekPromises = videoNodes
       .map((node: any) => node.image?.() ?? node.getAttr('image'))
-      .filter((el: any) => el instanceof HTMLVideoElement);
-
-    await Promise.all(videos.map((video: HTMLVideoElement) => {
-      video.pause();
-      // Schon nah genug dran → kein Seek nötig
-      if (Math.abs(video.currentTime - timeMs / 1000) < 0.01) return Promise.resolve();
-      video.currentTime = timeMs / 1000;
-      return new Promise<void>((resolve) => {
-        const onSeeked = () => {
-          video.removeEventListener('seeked', onSeeked);
-          clearTimeout(fallback);
-          resolve();
-        };
-        // ✅ Kurzer Fallback statt 200ms
-        const fallback = setTimeout(resolve, 30);
-        video.addEventListener('seeked', onSeeked);
+      .filter((el: any) => el instanceof HTMLVideoElement)
+      .map((video: HTMLVideoElement) => {
+        video.pause();
+        video.currentTime = timeMs / 1000;
+        return new Promise<void>((resolve) => {
+          const onSeeked = () => {
+            video.removeEventListener('seeked', onSeeked);
+            resolve();
+          };
+          // Fallback falls seeked nicht feuert
+          video.addEventListener('seeked', onSeeked);
+          setTimeout(resolve, 200);
+        });
       });
-    }));
+
+    await Promise.all(seekPromises);
   };
-
-  const target = new ArrayBufferTarget();
-  const muxer = new Muxer({
-    target,
-    video: { codec: 'avc', width, height },
-    fastStart: 'in-memory',
-  });
-
-  const encoder = new VideoEncoder({
-    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
-    error: (e) => console.error('VideoEncoder:', e),
-  });
-
-  encoder.configure({
-    codec: 'avc1.42001f',
-    width,
-    height,
-    bitrate,
-    framerate: fps,
-  });
 
   for (let i = 0; i < frameCount; i++) {
     const time = i * frameDelay;
@@ -866,39 +853,35 @@ async exportVideo({
     (self as any).setCurrentTime(time);
     (self as any).checkActivePage();
 
-    await new Promise<void>((r) =>
-      requestAnimationFrame(() => requestAnimationFrame(() => r())),
+    // Warten auf React/Konva Re-render
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
     );
 
+    // ✅ Videos auf korrekten Zeitpunkt seeken
     await seekAllVideos(time);
 
     const pageId = (self as any).activePage?.id;
-    const frameCanvas = await (self as any)._toCanvas({
+    const frame = await (self as any)._toCanvas({
       pixelRatio,
       pageId,
       _skipTimeout: true,
     });
 
-    // ✅ Timestamp wird explizit gesetzt – keine Echtzeit-Abhängigkeit
-    const bitmap = await createImageBitmap(frameCanvas);
-    const videoFrame = new VideoFrame(bitmap, {
-      timestamp: Math.round(time * 1000),       // Mikrosekunden
-      duration: Math.round(frameDelay * 1000),
-    });
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frame, 0, 0);
+    Konva.Util.releaseCanvas(frame);
 
-    bitmap.close();
-    Konva.Util.releaseCanvas(frameCanvas);
-
-    encoder.encode(videoFrame, { keyFrame: i % (fps * 2) === 0 });
-    videoFrame.close();
+    await new Promise((resolve) => setTimeout(resolve, frameDelay));
   }
 
-  await encoder.flush();
-  muxer.finalize();
+  recorder.stop();
+  await new Promise<void>((resolve) => { recorder.onstop = () => resolve(); });
+
   (self as any).stop();
 
-  const blob = new Blob([target.buffer], { type: 'video/mp4' });
-  downloadFile(URL.createObjectURL(blob), fileName || 'video.mp4');
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  downloadFile(URL.createObjectURL(blob), fileName || 'video.webm');
 },
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
