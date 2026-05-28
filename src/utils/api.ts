@@ -28,7 +28,7 @@ export const URLS: Record<string, (...args: any[]) => string> = {
   iconscoutDownload: (uuid) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/download-iconscout?uuid=${uuid}&KEY=${getKey()}`; },
   nounProjectList: ({ query, page = 1 }) => `${getAPI()}/get-nounproject?query=${query}&page=${page}&KEY=${getKey()}`,
   nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}&KEY=${getKey()}`,
-  templateList: ({ query, page = 1, sizeQuery }) => `/get-templates?${sizeQuery}&query=${query}&per_page=30&page=${page}}`,
+  templateList: ({ query, page = 1, sizeQuery }) => `${getAPI()}/get-templates?${sizeQuery}&query=${query}&per_page=30&page=${page}&KEY=${getKey()}`,
   googleFontsList: () => `${getAPI()}/get-google-fonts?KEY=${getKey()}`,
   googleFontImage: (name: string) => `${ASSETS_BASE}/google-fonts-previews/black/${name.replace(/ /g, '-')}.png`,
   textTemplateList: () => `${getAPI()}/get-text-templates?KEY=${getKey()}`,
