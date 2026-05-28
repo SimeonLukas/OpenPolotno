@@ -28,7 +28,7 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
-import { VideoSampleSource, VideoSample } from 'mediabunny';
+import { Output, BufferTarget, Mp4OutputFormat, CanvasSource, VideoSampleSource, VideoSample } from 'mediabunny';
 
 setLivelinessChecking('ignore');
 
