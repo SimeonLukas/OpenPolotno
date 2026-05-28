@@ -20,20 +20,19 @@ const ICONSCOUT_NOTICE =
   'https://raeditor.com/docs/server-api';
 
 export const URLS: Record<string, (...args: any[]) => string> = {
-  unsplashList: ({ query, page = 1 }) => `${getAPI()}/get-unsplash/?query=${query}&per_page=20&page=${page}}`,
-  unsplashDownload: (id) => `${getAPI()}/download-unsplash/?id=${id}}`,
-  svgapiList: ({ query, page = 0 }) => `${getAPI()}/get-svgapi?query=${query}&page=${page}&per_page=20}`,
-  svgapiDownload: (path) => `${getAPI()}/download-svgapi?path=${path}}`,
-  iconscoutList: ({ query, page = 1 }) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/get-iconscout?query=${query}&page=${page}}`; },
-  iconscoutDownload: (uuid) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/download-iconscout?uuid=${uuid}}`; },
-  nounProjectList: ({ query, page = 1 }) => `${getAPI()}/get-nounproject?query=${query}&page=${page}}`,
-  nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}}`,
-  templateList: ({ query, page = 1, sizeQuery }) => `${getAPI()}/get-templates/?${sizeQuery}&query=${query}&per_page=30&page=${page}}`,
-  googleFontsList: () => `${getAPI()}/get-google-fonts}`,
+  unsplashList: ({ query, page = 1 }) => `${getAPI()}/get-unsplash/?query=${query}&per_page=20&page=${page}`,
+  unsplashDownload: (id) => `${getAPI()}/download-unsplash/?id=${id}`,
+  svgapiList: ({ query, page = 0 }) => `${getAPI()}/get-svgapi?query=${query}&page=${page}&per_page=20`,
+  svgapiDownload: (path) => `${getAPI()}/download-svgapi?path=${path}`,
+  iconscoutList: ({ query, page = 1 }) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/get-iconscout?query=${query}&page=${page}`; },
+  iconscoutDownload: (uuid) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/download-iconscout?uuid=${uuid}`; },
+  nounProjectList: ({ query, page = 1 }) => `${getAPI()}/get-nounproject?query=${query}&page=${page}`,
+  nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}`,
+  googleFontsList: () => `${getAPI()}/get-google-fonts`,
   googleFontImage: (name: string) => `${ASSETS_BASE}/google-fonts-previews/black/${name.replace(/ /g, '-')}.png`,
-  textTemplateList: () => `${getAPI()}/get-text-templates/}`,
-  removeBackground: () => `${getAPI()}/remove-image-background}`,
-  aiText: () => `${getAPI()}/ai/text}`,
+  textTemplateList: () => `${getAPI()}/get-text-templates/`,
+  removeBackground: () => `${getAPI()}/remove-image-background`,
+  aiText: () => `${getAPI()}/ai/text`,
 };
 
 export const getGoogleFontsListAPI = () => URLS.googleFontsList();
