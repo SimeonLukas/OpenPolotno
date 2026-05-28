@@ -796,7 +796,7 @@ export const Store = types
       downloadFile(url, fileName || 'raeditor.gif');
     },
 
-   async exportVideo({
+async exportVideo({
   fileName,
   fps = 30,
   pixelRatio = 1,
@@ -820,19 +820,46 @@ export const Store = types
   const frameDelay = 1000 / fps;
   const frameCount = Math.ceil((self as any).duration / frameDelay);
 
+  // Hilfsfunktion: alle <video>-Elemente im Stage finden und seeken
+  const seekAllVideos = async (timeMs: number) => {
+    const pageId = (self as any).activePage?.id;
+    const stages = Konva.stages.filter((s: any) => s.getAttr('pageId') === pageId);
+    if (!stages.length) return;
+
+    const videoNodes = stages[0].find('Image') as any[];
+    const seekPromises = videoNodes
+      .map((node: any) => node.image?.() ?? node.getAttr('image'))
+      .filter((el: any) => el instanceof HTMLVideoElement)
+      .map((video: HTMLVideoElement) => {
+        video.pause();
+        video.currentTime = timeMs / 1000;
+        return new Promise<void>((resolve) => {
+          const onSeeked = () => {
+            video.removeEventListener('seeked', onSeeked);
+            resolve();
+          };
+          // Fallback falls seeked nicht feuert
+          video.addEventListener('seeked', onSeeked);
+          setTimeout(resolve, 200);
+        });
+      });
+
+    await Promise.all(seekPromises);
+  };
+
   for (let i = 0; i < frameCount; i++) {
     const time = i * frameDelay;
 
-    // ✅ Action verwenden statt direkter Zuweisung
     (self as any).setCurrentTime(time);
-
-    // Aktive Page bestimmen (ebenfalls über Action)
     (self as any).checkActivePage();
 
-    // Zwei Frames warten damit React/Konva neu rendern
+    // Warten auf React/Konva Re-render
     await new Promise<void>((resolve) =>
       requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
     );
+
+    // ✅ Videos auf korrekten Zeitpunkt seeken
+    await seekAllVideos(time);
 
     const pageId = (self as any).activePage?.id;
     const frame = await (self as any)._toCanvas({
@@ -845,18 +872,16 @@ export const Store = types
     ctx.drawImage(frame, 0, 0);
     Konva.Util.releaseCanvas(frame);
 
-    // Recorder Zeit geben den Frame zu erfassen
     await new Promise((resolve) => setTimeout(resolve, frameDelay));
   }
 
   recorder.stop();
   await new Promise<void>((resolve) => { recorder.onstop = () => resolve(); });
 
-  // ✅ Zustand zurücksetzen über Action
   (self as any).stop();
 
   const blob = new Blob(chunks, { type: 'video/webm' });
-  downloadFile(URL.createObjectURL(blob), fileName || 'raeditor.webm');
+  downloadFile(URL.createObjectURL(blob), fileName || 'video.webm');
 },
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
