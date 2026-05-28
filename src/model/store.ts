@@ -28,7 +28,11 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
-import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
+import {
+  Output,
+  BufferTarget,
+  Mp4OutputFormat,
+} from 'mediabunny';
 
 setLivelinessChecking('ignore');
 
@@ -807,6 +811,10 @@ async exportVideo({
   pixelRatio?: number;
   bitrate?: number;
 } = {}) {
+  if (!window.isSecureContext || typeof VideoEncoder === 'undefined' || typeof VideoFrame === 'undefined') {
+    throw new Error('Video-Export benötigt HTTPS oder localhost und WebCodecs-Unterstützung.');
+  }
+
   const width = Math.round(self.width * pixelRatio);
   const height = Math.round(self.height * pixelRatio);
   const frameDelay = 1000 / fps;
@@ -823,7 +831,6 @@ async exportVideo({
 
     await Promise.all(videos.map((video: HTMLVideoElement) => {
       video.pause();
-      // Schon nah genug dran → kein Seek nötig
       if (Math.abs(video.currentTime - timeMs / 1000) < 0.01) return Promise.resolve();
       video.currentTime = timeMs / 1000;
       return new Promise<void>((resolve) => {
@@ -832,31 +839,26 @@ async exportVideo({
           clearTimeout(fallback);
           resolve();
         };
-        // ✅ Kurzer Fallback statt 200ms
         const fallback = setTimeout(resolve, 30);
         video.addEventListener('seeked', onSeeked);
       });
     }));
   };
 
-  const target = new ArrayBufferTarget();
-  const muxer = new Muxer({
+  const target = new BufferTarget();
+  const output = new Output({
+    format: new Mp4OutputFormat({
+      fastStart: 'in-memory',
+    }),
     target,
-    video: { codec: 'avc', width, height },
-    fastStart: 'in-memory',
   });
 
-  const encoder = new VideoEncoder({
-    output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
-    error: (e) => console.error('VideoEncoder:', e),
-  });
-
-  encoder.configure({
+  const track = output.addVideoTrack({
     codec: 'avc1.42001f',
     width,
     height,
+    frameRate: fps,
     bitrate,
-    framerate: fps,
   });
 
   for (let i = 0; i < frameCount; i++) {
@@ -878,26 +880,24 @@ async exportVideo({
       _skipTimeout: true,
     });
 
-    // ✅ Timestamp wird explizit gesetzt – keine Echtzeit-Abhängigkeit
     const bitmap = await createImageBitmap(frameCanvas);
     const videoFrame = new VideoFrame(bitmap, {
-      timestamp: Math.round(time * 1000),       // Mikrosekunden
+      timestamp: Math.round(time * 1000),
       duration: Math.round(frameDelay * 1000),
     });
 
     bitmap.close();
     Konva.Util.releaseCanvas(frameCanvas);
 
-    encoder.encode(videoFrame, { keyFrame: i % (fps * 2) === 0 });
+    await track.writeFrame(videoFrame, { keyFrame: i % (fps * 2) === 0 });
     videoFrame.close();
   }
 
-  await encoder.flush();
-  muxer.finalize();
+  await output.close();
   (self as any).stop();
 
   const blob = new Blob([target.buffer], { type: 'video/mp4' });
-  downloadFile(URL.createObjectURL(blob), fileName || 'raeditor.mp4');
+  downloadFile(URL.createObjectURL(blob), fileName || 'video.mp4');
 },
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {

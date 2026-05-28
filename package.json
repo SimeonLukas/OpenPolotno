@@ -117,7 +117,7 @@
     "svg-round-corners": "^0.4.3",
     "swr": "^2.3.4",
     "use-image": "^1.1.4",
-    "mp4-muxer": "5.2.2"
+    "mediabunny": "1.45.4"
   },
   "peerDependencies": {
     "react": "^18.2.0",
