@@ -8,7 +8,7 @@ const _defaults = {
   textVerticalResizeEnabled: false,
   textOverflow: 'change-font-size' as string,
   textSplitAllowed: false,
-  animationsEnabled: false,
+  animationsEnabled: true,
 };
 
 type FlagsType = typeof _defaults;
