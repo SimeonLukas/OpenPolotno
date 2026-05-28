@@ -874,20 +874,23 @@ async exportVideo({
     await seekAllVideos(time);
 
     const pageId = (self as any).activePage?.id;
-    const frameCanvas = await (self as any)._toCanvas({
-      pixelRatio,
-      pageId,
-      _skipTimeout: true,
-    });
 
-    const bitmap = await createImageBitmap(frameCanvas);
-    const videoFrame = new VideoFrame(bitmap, {
-      timestamp: Math.round(time * 1000),
-      duration: Math.round(frameDelay * 1000),
-    });
+const frameCanvas = await (self as any)._toCanvas({
+  pixelRatio,
+  pageId,
+  _skipTimeout: true,
+});
 
-    bitmap.close();
-    Konva.Util.releaseCanvas(frameCanvas);
+const videoFrame = new VideoFrame(frameCanvas, {
+  timestamp: Math.round(time * 1000),
+  duration: Math.round(frameDelay * 1000),
+  alpha: 'discard',
+});
+
+await track.writeFrame(videoFrame, { keyFrame: i % (fps * 2) === 0 });
+
+videoFrame.close();
+Konva.Util.releaseCanvas(frameCanvas);
 
     await track.writeFrame(videoFrame, { keyFrame: i % (fps * 2) === 0 });
     videoFrame.close();
