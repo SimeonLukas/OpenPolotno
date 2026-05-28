@@ -3,7 +3,7 @@ import { getKey } from './validate-key';
 export const URL_BASE = window.location.origin;
 export const API = `${URL_BASE}:3002/api`;
 export const ASSETS_BASE = `${URL_BASE}:3002`;
-export const getAPI = () => URL_BASE + ':3002/api';
+export const getAPI = () => URL_BASE + '';
 
 const _warnedOnce: Record<string, boolean> = {};
 const warnOnce = (key: string, message: string) => {
