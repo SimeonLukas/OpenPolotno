@@ -20,25 +20,25 @@ const ICONSCOUT_NOTICE =
   'https://raeditor.com/docs/server-api';
 
 export const URLS: Record<string, (...args: any[]) => string> = {
-  unsplashList: ({ query, page = 1 }) => `${getAPI()}/get-unsplash?query=${query}&per_page=20&page=${page}&KEY=${getKey()}`,
-  unsplashDownload: (id) => `${getAPI()}/download-unsplash?id=${id}&KEY=${getKey()}`,
-  svgapiList: ({ query, page = 0 }) => `${getAPI()}/get-svgapi?query=${query}&page=${page}&per_page=20&KEY=${getKey()}`,
-  svgapiDownload: (path) => `${getAPI()}/download-svgapi?path=${path}&KEY=${getKey()}`,
-  iconscoutList: ({ query, page = 1 }) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/get-iconscout?query=${query}&page=${page}&KEY=${getKey()}`; },
-  iconscoutDownload: (uuid) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/download-iconscout?uuid=${uuid}&KEY=${getKey()}`; },
-  nounProjectList: ({ query, page = 1 }) => `${getAPI()}/get-nounproject?query=${query}&page=${page}&KEY=${getKey()}`,
-  nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}&KEY=${getKey()}`,
-  templateList: ({ query, page = 1, sizeQuery }) => `${getAPI()}/get-templates?${sizeQuery}&query=${query}&per_page=30&page=${page}&KEY=${getKey()}`,
-  googleFontsList: () => `${getAPI()}/get-google-fonts?KEY=${getKey()}`,
+  unsplashList: ({ query, page = 1 }) => `${getAPI()}/get-unsplash/?query=${query}&per_page=20&page=${page}}`,
+  unsplashDownload: (id) => `${getAPI()}/download-unsplash/?id=${id}}`,
+  svgapiList: ({ query, page = 0 }) => `${getAPI()}/get-svgapi?query=${query}&page=${page}&per_page=20}`,
+  svgapiDownload: (path) => `${getAPI()}/download-svgapi?path=${path}}`,
+  iconscoutList: ({ query, page = 1 }) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/get-iconscout?query=${query}&page=${page}}`; },
+  iconscoutDownload: (uuid) => { warnOnce('iconscout', ICONSCOUT_NOTICE); return `${getAPI()}/download-iconscout?uuid=${uuid}}`; },
+  nounProjectList: ({ query, page = 1 }) => `${getAPI()}/get-nounproject?query=${query}&page=${page}}`,
+  nounProjectDownload: (id) => `${getAPI()}/download-nounproject?id=${id}}`,
+  templateList: ({ query, page = 1, sizeQuery }) => `${getAPI()}/get-templates/?${sizeQuery}&query=${query}&per_page=30&page=${page}}`,
+  googleFontsList: () => `${getAPI()}/get-google-fonts}`,
   googleFontImage: (name: string) => `${ASSETS_BASE}/google-fonts-previews/black/${name.replace(/ /g, '-')}.png`,
-  textTemplateList: () => `${getAPI()}/get-text-templates?KEY=${getKey()}`,
-  removeBackground: () => `${getAPI()}/remove-image-background?KEY=${getKey()}`,
-  aiText: () => `${getAPI()}/ai/text?KEY=${getKey()}`,
+  textTemplateList: () => `${getAPI()}/get-text-templates/}`,
+  removeBackground: () => `${getAPI()}/remove-image-background}`,
+  aiText: () => `${getAPI()}/ai/text}`,
 };
 
 export const getGoogleFontsListAPI = () => URLS.googleFontsList();
 export const getGoogleFontImage = (name: string) => URLS.googleFontImage(name);
-export const raeditorShapesList = () => `${getAPI()}/get-basic-shapes?KEY=${getKey()}`;
+export const raeditorShapesList = () => `${getAPI()}/get-basic-shapes}`;
 export const removeBackground = () => URLS.removeBackground();
 export const templateList = (opts: any) => URLS.templateList(opts);
 export const textTemplateList = () => URLS.textTemplateList();
