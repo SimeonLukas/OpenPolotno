@@ -133,9 +133,6 @@ export const DEFAULT_SECTIONS = [
   HistorySection,
   SizeSection,
   IconsSection, 
-  AnimationSection,
-  EffectsSection,
-  ImageClipSection,
 ];
 
 const ImageClipSection = { name: 'image-clip', Tab: () => null, Panel: ImageClipPanel };
