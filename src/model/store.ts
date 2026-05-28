@@ -28,6 +28,7 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
+import { Muxer, ArrayBufferTarget } from 'mp4-muxer';
 
 setLivelinessChecking('ignore');
 
@@ -838,9 +839,6 @@ async exportVideo({
       });
     }));
   };
-
-  // ✅ WebCodecs: frame-genau, schneller als Echtzeit
-  const { Muxer, ArrayBufferTarget } = await import('mp4-muxer');
 
   const target = new ArrayBufferTarget();
   const muxer = new Muxer({
