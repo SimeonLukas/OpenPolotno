@@ -28,11 +28,7 @@ import { jsonToSVG } from '../utils/to-svg';
 import { Page } from './page-model';
 import { forEveryChild } from './group-model';
 import { Audio } from './audio-model';
-import {
-  Output,
-  BufferTarget,
-  Mp4OutputFormat,
-} from 'mediabunny';
+import { VideoSampleSource, VideoSample } from 'mediabunny';
 
 setLivelinessChecking('ignore');
 
@@ -853,12 +849,18 @@ async exportVideo({
     target,
   });
 
-  const track = output.addVideoTrack({
-    codec: 'avc1.42001f',
+  // ✅ Korrekte Mediabunny-Usage mit VideoSampleSource
+  const videoSource = new VideoSampleSource({
+    codec: 'avc', // nicht 'avc1.42001f', sondern Kurzform
+    bitrate,
     width,
     height,
     frameRate: fps,
-    bitrate,
+    alpha: 'discard',
+  });
+
+  const track = output.addVideoTrack(videoSource, {
+    frameRate: fps,
   });
 
   for (let i = 0; i < frameCount; i++) {
@@ -874,29 +876,32 @@ async exportVideo({
     await seekAllVideos(time);
 
     const pageId = (self as any).activePage?.id;
+    const frameCanvas = await (self as any)._toCanvas({
+      pixelRatio,
+      pageId,
+      _skipTimeout: true,
+    });
 
-const frameCanvas = await (self as any)._toCanvas({
-  pixelRatio,
-  pageId,
-  _skipTimeout: true,
-});
+    // ✅ VideoSample aus Canvas erstellen
+    const bitmap = await createImageBitmap(frameCanvas);
+    const videoFrame = new VideoFrame(bitmap, {
+      timestamp: Math.round(time * 1000),
+      duration: Math.round(frameDelay * 1000),
+    });
 
-const videoFrame = new VideoFrame(frameCanvas, {
-  timestamp: Math.round(time * 1000),
-  duration: Math.round(frameDelay * 1000),
-  alpha: 'discard',
-});
+    bitmap.close();
+    Konva.Util.releaseCanvas(frameCanvas);
 
-await track.writeFrame(videoFrame, { keyFrame: i % (fps * 2) === 0 });
+    // ✅ VideoSample anstelle von VideoFrame verwenden
+    const videoSample: VideoSample = videoFrame;
+    await videoSource.add(videoSample, { keyFrame: i % (fps * 2) === 0 });
 
-videoFrame.close();
-Konva.Util.releaseCanvas(frameCanvas);
-
-    await track.writeFrame(videoFrame, { keyFrame: i % (fps * 2) === 0 });
     videoFrame.close();
   }
 
-  await output.close();
+  await videoSource.close();
+  await output.start();
+  await output.finalize();
   (self as any).stop();
 
   const blob = new Blob([target.buffer], { type: 'video/mp4' });
