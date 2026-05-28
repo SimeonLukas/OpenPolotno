@@ -796,30 +796,64 @@ export const Store = types
       downloadFile(url, fileName || 'raeditor.gif');
     },
 
-    async exportVideo({ fileName, fps = 30, pixelRatio = 1 } = {}) {
+   async exportVideo({
+  fileName,
+  fps = 30,
+  pixelRatio = 1,
+}: {
+  fileName?: string;
+  fps?: number;
+  pixelRatio?: number;
+} = {}) {
   const canvas = document.createElement('canvas');
   canvas.width = self.width * pixelRatio;
   canvas.height = self.height * pixelRatio;
+  const ctx = canvas.getContext('2d')!;
 
   const stream = canvas.captureStream(fps);
   const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
   const chunks: Blob[] = [];
 
-  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
   recorder.start();
 
   const frameDelay = 1000 / fps;
-  const frameCount = Math.ceil(self.duration / frameDelay);
+  const frameCount = Math.ceil((self as any).duration / frameDelay);
 
   for (let i = 0; i < frameCount; i++) {
-    self.currentTime = i * frameDelay;
-    const frame = await self._toCanvas({ pixelRatio, _skipTimeout: true });
-    canvas.getContext('2d')!.drawImage(frame, 0, 0);
-    await new Promise(r => setTimeout(r, frameDelay));
+    const time = i * frameDelay;
+
+    // ✅ Action verwenden statt direkter Zuweisung
+    (self as any).setCurrentTime(time);
+
+    // Aktive Page bestimmen (ebenfalls über Action)
+    (self as any).checkActivePage();
+
+    // Zwei Frames warten damit React/Konva neu rendern
+    await new Promise<void>((resolve) =>
+      requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+    );
+
+    const pageId = (self as any).activePage?.id;
+    const frame = await (self as any)._toCanvas({
+      pixelRatio,
+      pageId,
+      _skipTimeout: true,
+    });
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(frame, 0, 0);
+    Konva.Util.releaseCanvas(frame);
+
+    // Recorder Zeit geben den Frame zu erfassen
+    await new Promise((resolve) => setTimeout(resolve, frameDelay));
   }
 
   recorder.stop();
-  await new Promise(r => recorder.onstop = r);
+  await new Promise<void>((resolve) => { recorder.onstop = () => resolve(); });
+
+  // ✅ Zustand zurücksetzen über Action
+  (self as any).stop();
 
   const blob = new Blob(chunks, { type: 'video/webm' });
   downloadFile(URL.createObjectURL(blob), fileName || 'raeditor.webm');
