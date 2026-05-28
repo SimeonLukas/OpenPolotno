@@ -316,6 +316,7 @@ const defaultTextComponents: Record<string, any> = {
   TextTransform,
   TextFill,
   TextSpacing,
+  TextAiWrite,
   TextFilters: FiltersPicker,
   TextAnimations: AnimationsPicker,
 };
@@ -323,8 +324,8 @@ const defaultTextComponents: Record<string, any> = {
 export const TextToolbar = observer(({ store, components }: any) => {
   const elements = store.selectedElements;
   const usedItems = [
-    'TextFill', 'TextFontFamily', 'TextFontSize', 'TextFontVariant', 'TextSpacing', 'TextTransform',
-    'TextFilters', flags.animationsEnabled && 'TextAnimations', 'TextAiWrite',
+    'TextFill', 'TextFontFamily', 'TextFontSize', 'TextFontVariant', 'TextSpacing',
+    'TextFilters', flags.animationsEnabled && 'TextAnimations',
   ];
   const items = extendToolbar({ type: 'text', usedItems, components });
   return React.createElement(ElementContainer, {
