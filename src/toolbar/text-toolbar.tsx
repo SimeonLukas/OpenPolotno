@@ -313,6 +313,7 @@ const defaultTextComponents: Record<string, any> = {
   TextFontFamily,
   TextFontSize,
   TextFontVariant,
+  TextTransform,
   TextFill,
   TextSpacing,
   TextFilters: FiltersPicker,
