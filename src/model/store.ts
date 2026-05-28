@@ -796,6 +796,35 @@ export const Store = types
       downloadFile(url, fileName || 'raeditor.gif');
     },
 
+    async exportVideo({ fileName, fps = 30, pixelRatio = 1 } = {}) {
+  const canvas = document.createElement('canvas');
+  canvas.width = self.width * pixelRatio;
+  canvas.height = self.height * pixelRatio;
+
+  const stream = canvas.captureStream(fps);
+  const recorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+  const chunks: Blob[] = [];
+
+  recorder.ondataavailable = (e) => chunks.push(e.data);
+  recorder.start();
+
+  const frameDelay = 1000 / fps;
+  const frameCount = Math.ceil(self.duration / frameDelay);
+
+  for (let i = 0; i < frameCount; i++) {
+    self.currentTime = i * frameDelay;
+    const frame = await self._toCanvas({ pixelRatio, _skipTimeout: true });
+    canvas.getContext('2d')!.drawImage(frame, 0, 0);
+    await new Promise(r => setTimeout(r, frameDelay));
+  }
+
+  recorder.stop();
+  await new Promise(r => recorder.onstop = r);
+
+  const blob = new Blob(chunks, { type: 'video/webm' });
+  downloadFile(URL.createObjectURL(blob), fileName || 'raeditor.webm');
+},
+
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
       return jsonToHTML({ json: (self as any).toJSON(), elementHook });
     },
