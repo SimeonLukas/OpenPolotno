@@ -910,7 +910,6 @@ async exportVideo({
     videoSample.close(); // ✅ VideoSample nach Verwendung schließen [web:52]
   }
 
-  await videoSource.end();
   await output.finalize();
   (self as any).stop();
 
