@@ -33,7 +33,7 @@ export default defineConfig({
     'konva', 'quill', 'swr', 'use-image', 'sortablejs', 'nanoid',
     'gradient-parser', 'gifuct-js', 'fast-json-patch',
     'svg-round-corners', 'rasterizehtml', 'dompurify', 'cssom', 'mensch',
-    '@meronex/icons',
+    '@meronex/icons', 'mp4-muxer',
   ],
   esbuildOptions(options) {
     options.jsx = 'transform';
