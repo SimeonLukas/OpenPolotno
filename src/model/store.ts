@@ -850,7 +850,7 @@ async exportVideo({
   a.download = fileName || `design.${format}`
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
-}
+},
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
       return jsonToHTML({ json: (self as any).toJSON(), elementHook });
