@@ -30,11 +30,11 @@ const TimelineFloating = styled('div')`
   position: absolute;
   bottom: 5px;
   width: auto;
-  left: 5px;
+  right: 5px;
   overflow: hidden;
   box-shadow: 0 0 4px lightgrey;
   border-radius: 5px;
-  z-index: 1;
+  z-index: 9999999999;
 `;
 
 // The dark full-width panel shown when timeline is open
