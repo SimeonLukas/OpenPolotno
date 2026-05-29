@@ -27,7 +27,8 @@ const SectionContainer = styled('div')`
   }
 `;
 
-// SVG Icons
+// ─────────────────────────────── SVG Icons ───────────────────────────────────
+
 const MoveIcon = () => React.createElement('svg', { width: '28', height: '28', viewBox: '0 0 28 28', xmlns: 'http://www.w3.org/2000/svg', style: { margin: 0 } },
   React.createElement('path', { d: 'M11.375 6.125H7C6.76793 6.125 6.54537 6.21719 6.38128 6.38128C6.21719 6.54537 6.125 6.76793 6.125 7V11.375C6.125 11.6071 6.21719 11.8296 6.38128 11.9937C6.54537 12.1578 6.76793 12.25 7 12.25C7.23207 12.25 7.45463 12.1578 7.61872 11.9937C7.78281 11.8296 7.875 11.6071 7.875 11.375V8.24703L12.507 12.879C12.6713 13.0379 12.8922 13.1263 13.1215 13.1244C13.3508 13.1226 13.5703 13.0307 13.7321 12.8693C13.8938 12.7078 13.9862 12.4885 13.9885 12.2593C13.9908 12.0301 13.9028 11.809 13.7441 11.6444L9.11219 7.01234C9.27603 6.8474 9.49928 6.7547 9.73203 6.75H11.375C11.6071 6.75 11.8296 6.65781 11.9937 6.49372C12.1578 6.32963 12.25 6.10706 12.25 5.875C12.25 5.64294 12.1578 5.42037 11.9937 5.25628C11.8296 5.09219 11.6071 5 11.375 5ZM16.625 21.875H21C21.2321 21.875 21.4546 21.7828 21.6187 21.6187C21.7828 21.4546 21.875 21.2321 21.875 21V16.625C21.875 16.3929 21.7828 16.1704 21.6187 16.0063C21.4546 15.8422 21.2321 15.75 21 15.75C20.7679 15.75 20.5454 15.8422 20.3813 16.0063C20.2172 16.1704 20.125 16.3929 20.125 16.625V19.763L15.493 15.131C15.3287 14.9721 15.1078 14.8837 14.8785 14.8856C14.6492 14.8874 14.4297 14.9793 14.2679 15.1407C14.1062 15.3022 14.0138 15.5215 14.0115 15.7507C14.0092 15.9799 14.0972 16.201 14.2559 16.3656L18.8878 20.9977C18.724 21.1626 18.5007 21.2553 18.268 21.26H16.625C16.3929 21.26 16.1704 21.3522 16.0063 21.5163C15.8422 21.6804 15.75 21.9029 15.75 22.135C15.75 22.3671 15.8422 22.5896 16.0063 22.7537C16.1704 22.9178 16.3929 23.01 16.625 23.01V21.875Z', fill: 'currentColor' })
 );
@@ -53,15 +54,47 @@ const BounceIcon = () => React.createElement('svg', { width: '28', height: '28',
   React.createElement('path', { d: 'M14 3.5C18.6944 3.5 22.5 7.30558 22.5 12C22.5 16.6944 18.6944 20.5 14 20.5C9.30558 20.5 5.5 16.6944 5.5 12C5.5 7.30558 9.30558 3.5 14 3.5ZM14 5.25C10.2721 5.25 7.25 8.27208 7.25 12C7.25 15.7279 10.2721 18.75 14 18.75C17.7279 18.75 20.75 15.7279 20.75 12C20.75 8.27208 17.7279 5.25 14 5.25ZM14 7C16.7614 7 19 9.23858 19 12C19 14.7614 16.7614 17 14 17C11.2386 17 9 14.7614 9 12C9 9.23858 11.2386 7 14 7ZM14 8.75C12.2051 8.75 10.75 10.2051 10.75 12C10.75 13.7949 12.2051 15.25 14 15.25C15.7949 15.25 17.25 13.7949 17.25 12C17.25 10.2051 15.7949 8.75 14 8.75ZM14 10.5C14.8284 10.5 15.5 11.1716 15.5 12C15.5 12.8284 14.8284 13.5 14 13.5C13.1716 13.5 12.5 12.8284 12.5 12C12.5 11.1716 13.1716 10.5 14 10.5Z', fill: 'currentColor' })
 );
 
-// Per-animation Enter/Both/Exit toggle — each animation (move/fade/zoom) has its own.
+// ── NEW icons ─────────────────────────────────────────────────────────────────
+
+// FlyIcon – paper-airplane arrow shooting off to one side
+const FlyIcon = () => React.createElement('svg', { width: '28', height: '28', viewBox: '0 0 28 28', xmlns: 'http://www.w3.org/2000/svg', style: { margin: 0 } },
+  React.createElement('path', { d: 'M3.5 14L24.5 5.25L19.25 14L24.5 22.75L3.5 14ZM3.5 14L13.125 17.5', stroke: 'currentColor', strokeWidth: '1.75', strokeLinecap: 'round', strokeLinejoin: 'round', fill: 'none' }),
+  React.createElement('line', { x1: '18', y1: '3', x2: '26', y2: '3', stroke: 'currentColor', strokeWidth: '1.75', strokeLinecap: 'round' }),
+  React.createElement('line', { x1: '20', y1: '6.5', x2: '26', y2: '6.5', stroke: 'currentColor', strokeWidth: '1.75', strokeLinecap: 'round' })
+);
+
+// FlipIcon – two mirrored triangles (card-flip)
+const FlipIcon = () => React.createElement('svg', { width: '28', height: '28', viewBox: '0 0 28 28', xmlns: 'http://www.w3.org/2000/svg', style: { margin: 0 } },
+  React.createElement('path', { d: 'M13 6L13 22L5 14Z', fill: 'currentColor' }),
+  React.createElement('path', { d: 'M15 6L15 22L23 14Z', fill: 'currentColor', opacity: '0.45' }),
+  React.createElement('line', { x1: '14', y1: '4', x2: '14', y2: '24', stroke: 'currentColor', strokeWidth: '1.5', strokeDasharray: '2 2' })
+);
+
+// ShakeIcon – element with horizontal motion lines
+const ShakeIcon = () => React.createElement('svg', { width: '28', height: '28', viewBox: '0 0 28 28', xmlns: 'http://www.w3.org/2000/svg', style: { margin: 0 } },
+  React.createElement('rect', { x: '9', y: '8', width: '10', height: '12', rx: '2', fill: 'currentColor', opacity: '0.9' }),
+  React.createElement('path', { d: 'M4 14 C5.5 11 5.5 17 7 14', stroke: 'currentColor', strokeWidth: '1.75', strokeLinecap: 'round', fill: 'none' }),
+  React.createElement('path', { d: 'M24 14 C22.5 11 22.5 17 21 14', stroke: 'currentColor', strokeWidth: '1.75', strokeLinecap: 'round', fill: 'none' })
+);
+
+// PulseIcon – concentric rings
+const PulseIcon = () => React.createElement('svg', { width: '28', height: '28', viewBox: '0 0 28 28', xmlns: 'http://www.w3.org/2000/svg', style: { margin: 0 } },
+  React.createElement('circle', { cx: '14', cy: '14', r: '4', fill: 'currentColor' }),
+  React.createElement('circle', { cx: '14', cy: '14', r: '7', stroke: 'currentColor', strokeWidth: '1.5', fill: 'none', opacity: '0.6' }),
+  React.createElement('circle', { cx: '14', cy: '14', r: '10.5', stroke: 'currentColor', strokeWidth: '1.2', fill: 'none', opacity: '0.3' })
+);
+
+// ─────────────────────────────── Sub-components ──────────────────────────────
+
+// Per-animation Enter/Both/Exit toggle
 const PerAnimEnterExitToggle = observer(({ element, store, name }: any) => {
   const enterEnabled = !!(element.animations as any[]).find((a: any) => a.name === name && a.type === 'enter' && a.enabled);
-  const exitEnabled = !!(element.animations as any[]).find((a: any) => a.name === name && a.type === 'exit' && a.enabled);
+  const exitEnabled  = !!(element.animations as any[]).find((a: any) => a.name === name && a.type === 'exit'  && a.enabled);
 
   const setMode = (mode: 'enter' | 'both' | 'exit') => {
     store.history.transaction(() => {
-      element.setAnimation('enter', { name, enabled: mode !== 'exit' });
-      element.setAnimation('exit', { name, enabled: mode !== 'enter' });
+      element.setAnimation('enter', { name, enabled: mode !== 'exit'  });
+      element.setAnimation('exit',  { name, enabled: mode !== 'enter' });
     });
   };
 
@@ -69,8 +102,8 @@ const PerAnimEnterExitToggle = observer(({ element, store, name }: any) => {
     'div',
     { style: { display: 'flex', gap: 8, paddingTop: '8px', paddingBottom: '4px' } },
     React.createElement(Button, { fill: true, small: true, active: enterEnabled && !exitEnabled, onClick: () => setMode('enter') }, 'Enter'),
-    React.createElement(Button, { fill: true, small: true, active: enterEnabled && exitEnabled, onClick: () => setMode('both') }, 'Both'),
-    React.createElement(Button, { fill: true, small: true, active: exitEnabled && !enterEnabled, onClick: () => setMode('exit') }, 'Exit'),
+    React.createElement(Button, { fill: true, small: true, active: enterEnabled && exitEnabled,  onClick: () => setMode('both')  }, 'Both'),
+    React.createElement(Button, { fill: true, small: true, active: exitEnabled && !enterEnabled, onClick: () => setMode('exit')  }, 'Exit'),
   );
 });
 
@@ -79,15 +112,9 @@ const directions = ['right', 'left', 'up', 'down', 'bottom-right', 'bottom-left'
 const directionItemRenderer = (dir: string, { handleClick, handleFocus, modifiers }: any) => {
   if (!modifiers.matchesPredicate) return null;
   return React.createElement(MenuItem, {
-    active: modifiers.active,
-    disabled: modifiers.disabled,
-    key: dir,
-    onClick: handleClick,
-    icon: 'arrow-' + dir,
-    onFocus: handleFocus,
-    roleStructure: 'listoption',
-    text: dir,
-    shouldDismissPopover: false,
+    active: modifiers.active, disabled: modifiers.disabled, key: dir,
+    onClick: handleClick, icon: 'arrow-' + dir, onFocus: handleFocus,
+    roleStructure: 'listoption', text: dir, shouldDismissPopover: false,
   });
 };
 
@@ -116,13 +143,29 @@ const ZoomDirectionPicker = observer(({ value, onChange }: any) =>
         itemRenderer: (dir: string, { handleClick, handleFocus, modifiers }: any) => {
           if (!modifiers.matchesPredicate) return null;
           return React.createElement(MenuItem, {
-            active: modifiers.active, disabled: modifiers.disabled, key: dir, onClick: handleClick, onFocus: handleFocus,
+            active: modifiers.active, disabled: modifiers.disabled, key: dir,
+            onClick: handleClick, onFocus: handleFocus,
             roleStructure: 'listoption', text: dir === 'out' ? 'Zoom Out' : 'Zoom In', shouldDismissPopover: false,
           });
         },
         filterable: false, activeItem: value, onItemSelect: (d: string) => { onChange(d); },
       },
       React.createElement(Button, { text: value === 'out' ? 'Zoom Out' : 'Zoom In', fill: true })
+    )
+  )
+);
+
+// Axis picker used by both Flip and Shake
+const AxisPicker = observer(({ value, onChange }: any) =>
+  React.createElement(
+    'div',
+    { style: { paddingTop: '10px' } },
+    React.createElement('div', { style: { paddingBottom: '8px' } }, 'Axis'),
+    React.createElement(
+      'div',
+      { style: { display: 'flex', gap: 6 } },
+      React.createElement(Button, { fill: true, small: true, active: value === 'x', onClick: () => onChange('x') }, 'Horizontal'),
+      React.createElement(Button, { fill: true, small: true, active: value === 'y', onClick: () => onChange('y') }, 'Vertical'),
     )
   )
 );
@@ -188,13 +231,13 @@ const SpeedPicker = observer(({ element, store }: any) => {
 
 const DurationPicker = observer(({ element, store }: any) => {
   const enterAnims = (element.animations as any[]).filter((a) => a.type === 'enter' && a.enabled);
-  const exitAnims = (element.animations as any[]).filter((a) => a.type === 'exit' && a.enabled);
-  const enterAnim = enterAnims[0];
+  const exitAnims  = (element.animations as any[]).filter((a) => a.type === 'exit'  && a.enabled);
+  const enterAnim  = enterAnims[0];
   if (!enterAnim) return null;
   const pageDuration = element.page.duration;
   const setDuration = (v: number) => {
     enterAnims.forEach((a: any) => element.setAnimation('enter', { name: a.name, duration: v }));
-    exitAnims.forEach((a: any) => element.setAnimation('exit', { name: a.name, duration: v }));
+    exitAnims.forEach( (a: any) => element.setAnimation('exit',  { name: a.name, duration: v }));
   };
   return React.createElement(
     'div',
@@ -220,12 +263,10 @@ const StrengthPicker = observer(({ element, store, animationName }: any) => {
   const anim = element.animations.find((a: any) => a.name === animationName && a.enabled);
   if (!anim) return null;
   const strength = anim.data?.strength ?? 1;
-  let defaultMax = 2;
-  if (animationName === 'move') defaultMax = 3;
 
   const debounced = (() => {
     let timer: any;
-    return (...args: any[]) => {
+    return () => {
       timer && clearTimeout(timer);
       timer = setTimeout(() => {
         if (!store.isPlaying) {
@@ -242,7 +283,7 @@ const StrengthPicker = observer(({ element, store, animationName }: any) => {
       element.animations.forEach((a: any) => {
         if (a.name === animationName) {
           const data = a.data || {};
-          element.setAnimation(a.type, { name: a.name, data: Object.assign(Object.assign({}, data), { strength: val }) });
+          element.setAnimation(a.type, { name: a.name, data: { ...data, strength: val } });
         }
       });
     });
@@ -270,7 +311,7 @@ const StrengthPicker = observer(({ element, store, animationName }: any) => {
 
 const EndDelayPicker = observer(({ element, store }: any) => {
   const exitAnims = (element.animations as any[]).filter((a) => a.type === 'exit' && a.enabled);
-  const exitAnim = exitAnims[0];
+  const exitAnim  = exitAnims[0];
   if (!exitAnim) return null;
   const pageDuration = element.page.duration;
   const setDelay = (v: number) => {
@@ -293,6 +334,8 @@ const EndDelayPicker = observer(({ element, store }: any) => {
   );
 });
 
+// ─────────────────────────────── Main panel ──────────────────────────────────
+
 export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
   const elements = store.selectedElements as any[];
   const el = elements[0];
@@ -308,12 +351,12 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
 
   if (!el || !el.animations) return null;
 
-  // Toggle enter+exit on or off — used by the Move/Fade/Zoom buttons.
+  // Toggle enter+exit on or off for a given animation name
   const setEnterExit = (name: string, attrs: any) => {
     store.history.transaction(() => {
       elements.forEach((e) => {
-        e.setAnimation('enter', Object.assign({ name }, attrs));
-        e.setAnimation('exit', Object.assign({ name }, attrs));
+        e.setAnimation('enter', { name, ...attrs });
+        e.setAnimation('exit',  { name, ...attrs });
       });
     });
     if (attrs.enabled) {
@@ -323,12 +366,12 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
     }
   };
 
-  // Update animation data (direction, etc.) without changing enabled state.
+  // Update animation data (direction, axis, …) without changing enabled state
   const updateAnimData = (name: string, newData: Record<string, any>) => {
     store.history.transaction(() => {
       elements.forEach((e: any) => {
         (e.animations as any[]).filter((a: any) => a.name === name).forEach((a: any) => {
-          e.setAnimation(a.type, { name, data: Object.assign({}, a.data || {}, newData) });
+          e.setAnimation(a.type, { name, data: { ...(a.data || {}), ...newData } });
         });
       });
     });
@@ -336,7 +379,7 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
 
   const setLoop = (name: string, attrs: any) => {
     store.history.transaction(() => {
-      elements.forEach((e) => { e.setAnimation('loop', Object.assign({ name }, attrs)); });
+      elements.forEach((e) => { e.setAnimation('loop', { name, ...attrs }); });
     });
     if (attrs.enabled) {
       const page = store.activePage;
@@ -352,22 +395,31 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
     return !!(anims || []).find((a) => a.enabled);
   };
 
-  const hasEnterExit = isEnabled('move') || isEnabled('fade') || isEnabled('zoom');
-  const hasLoop = isEnabled('rotate') || isEnabled('blink') || isEnabled('bounce');
+  const hasEnterExit = isEnabled('move') || isEnabled('fade') || isEnabled('zoom') || isEnabled('fly') || isEnabled('flip');
+  const hasLoop      = isEnabled('rotate') || isEnabled('blink') || isEnabled('bounce') || isEnabled('shake') || isEnabled('pulse');
 
   const moveAnim = el.animations.find((a: any) => a.name === 'move');
+  const flyAnim  = el.animations.find((a: any) => a.name === 'fly');
   const zoomAnim = el.animations.find((a: any) => a.name === 'zoom');
+  const flipAnim = el.animations.find((a: any) => a.name === 'flip');
+  const shakeAnim = el.animations.find((a: any) => a.name === 'shake');
+
+  // Common button style
+  const animBtnStyle = { padding: '20px', display: 'flex', flexDirection: 'column' as const, alignItems: 'center', gap: '8px' };
 
   return React.createElement(
     'div',
     { style: { height: '100%', display: 'flex', flexDirection: 'column', overflow: 'auto', padding: '0 10px' } },
+
+    // ── Header ──────────────────────────────────────────────────────────────
     React.createElement(
       'div',
       { style: { display: 'flex', justifyContent: 'space-between', paddingBottom: '10px' } },
       React.createElement('h3', { style: { margin: 0, lineHeight: '30px' } }, s('sidePanel.animate')),
       React.createElement(Button, { minimal: true, icon: React.createElement(Cross, null), onClick: () => store.openSidePanel(store.previousOpenedSidePanel) })
     ),
-    // Animations section
+
+    // ── Animations section ───────────────────────────────────────────────────
     React.createElement(
       'div',
       { style: { paddingTop: '10px', lineHeight: '35px' } },
@@ -378,50 +430,104 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
         onClick: () => { firstEl.set({ animations: [] }); },
       }, 'Remove All')
     ),
+
     React.createElement(
       'div',
       { style: { paddingTop: '25px' } },
-      // Animation type buttons
+
+      // ── Animation type buttons (2-column grid) ───────────────────────────
       React.createElement(
         'div',
         { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '5px', paddingBottom: '10px' } },
-        React.createElement('div', null, React.createElement(Button, { outlined: true, large: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, icon: React.createElement(MoveIcon, null), active: isEnabled('move'), fill: true, onClick: () => { setEnterExit('move', { enabled: !isEnabled('move') }); } }, s('toolbar.move'))),
-        React.createElement('div', null, React.createElement(Button, { outlined: true, large: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, icon: React.createElement(FadeIcon, null), fill: true, active: isEnabled('fade'), onClick: () => { setEnterExit('fade', { enabled: !isEnabled('fade') }); } }, s('toolbar.fade'))),
-        React.createElement('div', null, React.createElement(Button, { outlined: true, large: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, icon: React.createElement(ZoomIcon, null), fill: true, active: isEnabled('zoom'), onClick: () => { setEnterExit('zoom', { enabled: !isEnabled('zoom') }); } }, s('toolbar.zoom')))
+        // Move
+        React.createElement('div', null, React.createElement(Button, {
+          outlined: true, large: true, style: animBtnStyle,
+          icon: React.createElement(MoveIcon, null), active: isEnabled('move'), fill: true,
+          onClick: () => { setEnterExit('move', { enabled: !isEnabled('move') }); },
+        }, s('toolbar.move'))),
+        // Fade
+        React.createElement('div', null, React.createElement(Button, {
+          outlined: true, large: true, style: animBtnStyle,
+          icon: React.createElement(FadeIcon, null), active: isEnabled('fade'), fill: true,
+          onClick: () => { setEnterExit('fade', { enabled: !isEnabled('fade') }); },
+        }, s('toolbar.fade'))),
+        // Zoom
+        React.createElement('div', null, React.createElement(Button, {
+          outlined: true, large: true, style: animBtnStyle,
+          icon: React.createElement(ZoomIcon, null), active: isEnabled('zoom'), fill: true,
+          onClick: () => { setEnterExit('zoom', { enabled: !isEnabled('zoom') }); },
+        }, s('toolbar.zoom'))),
+        // ── NEW: Fly ────────────────────────────────────────────────────────
+        React.createElement('div', null, React.createElement(Button, {
+          outlined: true, large: true, style: animBtnStyle,
+          icon: React.createElement(FlyIcon, null), active: isEnabled('fly'), fill: true,
+          onClick: () => { setEnterExit('fly', { enabled: !isEnabled('fly') }); },
+        }, 'Fly')),
+        // ── NEW: Flip ───────────────────────────────────────────────────────
+        React.createElement('div', null, React.createElement(Button, {
+          outlined: true, large: true, style: animBtnStyle,
+          icon: React.createElement(FlipIcon, null), active: isEnabled('flip'), fill: true,
+          onClick: () => { setEnterExit('flip', { enabled: !isEnabled('flip') }); },
+        }, 'Flip')),
       ),
-      // Per-animation settings — each animation has its own Enter/Both/Exit toggle
+
+      // ── Per-animation settings ───────────────────────────────────────────
+
       isEnabled('move') && React.createElement(
-        SectionContainer,
-        { style: { marginBottom: '6px' } },
+        SectionContainer, { style: { marginBottom: '6px' } },
         React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Move'),
         React.createElement(PerAnimEnterExitToggle, { element: el, store, name: 'move' }),
         React.createElement(DirectionPicker, { value: moveAnim?.data?.direction || 'right', onChange: (d: string) => { updateAnimData('move', { direction: d }); } }),
         React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'move' }),
       ),
+
       isEnabled('fade') && React.createElement(
-        SectionContainer,
-        { style: { marginBottom: '6px' } },
+        SectionContainer, { style: { marginBottom: '6px' } },
         React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Fade'),
         React.createElement(PerAnimEnterExitToggle, { element: el, store, name: 'fade' }),
       ),
+
       isEnabled('zoom') && React.createElement(
-        SectionContainer,
-        { style: { marginBottom: '6px' } },
+        SectionContainer, { style: { marginBottom: '6px' } },
         React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Zoom'),
         React.createElement(PerAnimEnterExitToggle, { element: el, store, name: 'zoom' }),
         React.createElement(ZoomDirectionPicker, { value: zoomAnim?.data?.direction || 'in', onChange: (d: string) => { updateAnimData('zoom', { direction: d }); } }),
         React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'zoom' }),
       ),
-      // Shared timing controls
+
+      // ── Fly settings ────────────────────────────────────────────────────
+      isEnabled('fly') && React.createElement(
+        SectionContainer, { style: { marginBottom: '6px' } },
+        React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Fly'),
+        React.createElement(PerAnimEnterExitToggle, { element: el, store, name: 'fly' }),
+        React.createElement(DirectionPicker, {
+          value: flyAnim?.data?.direction || 'right',
+          onChange: (d: string) => { updateAnimData('fly', { direction: d }); },
+        }),
+        React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'fly' }),
+      ),
+
+      // ── Flip settings ───────────────────────────────────────────────────
+      isEnabled('flip') && React.createElement(
+        SectionContainer, { style: { marginBottom: '6px' } },
+        React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Flip'),
+        React.createElement(PerAnimEnterExitToggle, { element: el, store, name: 'flip' }),
+        React.createElement(AxisPicker, {
+          value: flipAnim?.data?.axis || 'x',
+          onChange: (a: string) => { updateAnimData('flip', { axis: a }); },
+        }),
+      ),
+
+      // ── Shared timing controls ───────────────────────────────────────────
       hasEnterExit && React.createElement(
-        SectionContainer,
-        null,
-        isEnabled('enter') && React.createElement(DelayPicker, { store, element: firstEl }),
+        SectionContainer, null,
+        isEnabled('enter') && React.createElement(DelayPicker,    { store, element: firstEl }),
         isEnabled('enter') && React.createElement(DurationPicker, { store, element: firstEl }),
-        isEnabled('exit') && React.createElement(EndDelayPicker, { store, element: firstEl }),
+        isEnabled('exit')  && React.createElement(EndDelayPicker, { store, element: firstEl }),
       ),
     ),
-    // Effects section
+
+    // ── Effects section ──────────────────────────────────────────────────────
     React.createElement(
       'div',
       { style: { paddingTop: '10px', lineHeight: '35px' } },
@@ -432,14 +538,58 @@ export const AnimationsPanel = observer(({ store }: { store: StoreType }) => {
         onClick: () => { firstEl.set({ animations: [] }); },
       }, 'Remove All')
     ),
+
     React.createElement(
       'div',
       { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '5px', paddingTop: '10px' } },
-      React.createElement('div', null, React.createElement(Button, { minimal: true, outlined: true, large: true, fill: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, icon: React.createElement(RotateIcon, null), active: isEnabled('rotate'), onClick: () => { setLoop('rotate', { enabled: !isEnabled('rotate') }); } }, s('toolbar.rotate'))),
-      React.createElement('div', null, React.createElement(Button, { outlined: true, large: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, fill: true, icon: React.createElement(BlinkIcon, null), active: isEnabled('blink'), onClick: () => { setLoop('blink', { enabled: !isEnabled('blink') }); } }, s('toolbar.blink'))),
-      React.createElement('div', null, React.createElement(Button, { minimal: true, outlined: true, large: true, style: { padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }, icon: React.createElement(BounceIcon, null), fill: true, active: isEnabled('bounce'), onClick: () => { setLoop('bounce', { enabled: !isEnabled('bounce') }); } }, s('toolbar.bounce')))
+      // Rotate
+      React.createElement('div', null, React.createElement(Button, {
+        minimal: true, outlined: true, large: true, fill: true, style: animBtnStyle,
+        icon: React.createElement(RotateIcon, null), active: isEnabled('rotate'),
+        onClick: () => { setLoop('rotate', { enabled: !isEnabled('rotate') }); },
+      }, s('toolbar.rotate'))),
+      // Blink
+      React.createElement('div', null, React.createElement(Button, {
+        outlined: true, large: true, fill: true, style: animBtnStyle,
+        icon: React.createElement(BlinkIcon, null), active: isEnabled('blink'),
+        onClick: () => { setLoop('blink', { enabled: !isEnabled('blink') }); },
+      }, s('toolbar.blink'))),
+      // Bounce
+      React.createElement('div', null, React.createElement(Button, {
+        minimal: true, outlined: true, large: true, fill: true, style: animBtnStyle,
+        icon: React.createElement(BounceIcon, null), active: isEnabled('bounce'),
+        onClick: () => { setLoop('bounce', { enabled: !isEnabled('bounce') }); },
+      }, s('toolbar.bounce'))),
+      // ── NEW: Shake ──────────────────────────────────────────────────────
+      React.createElement('div', null, React.createElement(Button, {
+        outlined: true, large: true, fill: true, style: animBtnStyle,
+        icon: React.createElement(ShakeIcon, null), active: isEnabled('shake'),
+        onClick: () => { setLoop('shake', { enabled: !isEnabled('shake') }); },
+      }, 'Shake')),
+      // ── NEW: Pulse ──────────────────────────────────────────────────────
+      React.createElement('div', null, React.createElement(Button, {
+        outlined: true, large: true, fill: true, style: animBtnStyle,
+        icon: React.createElement(PulseIcon, null), active: isEnabled('pulse'),
+        onClick: () => { setLoop('pulse', { enabled: !isEnabled('pulse') }); },
+      }, 'Pulse')),
     ),
+
+    // ── Effects shared controls ──────────────────────────────────────────────
     hasLoop && React.createElement(SpeedPicker, { store, element: firstEl }),
-    isEnabled('bounce') && React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'bounce' })
+
+    isEnabled('bounce') && React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'bounce' }),
+
+    // Shake axis + strength
+    isEnabled('shake') && React.createElement(
+      SectionContainer, { style: { marginTop: '6px' } },
+      React.createElement('div', { style: { paddingTop: '6px', paddingBottom: '2px', fontWeight: 500 } }, 'Shake'),
+      React.createElement(AxisPicker, {
+        value: shakeAnim?.data?.axis || 'x',
+        onChange: (a: string) => { updateAnimData('shake', { axis: a }); },
+      }),
+      React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'shake' }),
+    ),
+
+    isEnabled('pulse') && React.createElement(StrengthPicker, { store, element: firstEl, animationName: 'pulse' }),
   );
 });

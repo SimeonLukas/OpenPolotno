@@ -13,12 +13,28 @@ const SLIDE_DIRECTIONS: Record<string, { from: Record<string, number>; to: Recor
   'top-left':     { from: { x: 200,  y: 200  }, to: { x: 0, y: 0 } },
 };
 
+// Like SLIDE_DIRECTIONS but large enough to guarantee full off-screen travel
+const FLY_DIRECTIONS: Record<string, { from: Record<string, number>; to: Record<string, number> }> = {
+  right:        { from: { x: -3000 }, to: { x: 0 } },
+  left:         { from: { x: 3000  }, to: { x: 0 } },
+  up:           { from: { y: 3000  }, to: { y: 0 } },
+  down:         { from: { y: -3000 }, to: { y: 0 } },
+  'bottom-right': { from: { x: -3000, y: -3000 }, to: { x: 0, y: 0 } },
+  'bottom-left':  { from: { x: 3000,  y: -3000 }, to: { x: 0, y: 0 } },
+  'top-right':    { from: { x: -3000, y: 3000  }, to: { x: 0, y: 0 } },
+  'top-left':     { from: { x: 3000,  y: 3000  }, to: { x: 0, y: 0 } },
+};
+
 const CAMERA_DIRECTIONS: Record<string, { cropX?: number; cropY?: number }> = {
   right: { cropX: -1 },
   left:  { cropX: 1  },
   up:    { cropY: 1  },
   down:  { cropY: -1 },
 };
+
+// Simple easing helpers
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+const easeInCubic  = (t: number) => t * t * t;
 
 export const animations: Record<string, AnimationFn> = {
   fade: ({ dTime, element, animation }) => {
@@ -87,6 +103,55 @@ export const animations: Record<string, AnimationFn> = {
       result[key] = start + (dTime / animation.duration) * delta;
     }
     return result;
+  },
+
+  // ─── NEW: fly ────────────────────────────────────────────────────────────────
+  // Like "move" but travels 3000 px – element is completely off screen before /
+  // after animation. Uses an eased curve so the motion feels snappy.
+  fly: ({ dTime, element, animation }) => {
+    const dir = FLY_DIRECTIONS[animation.data?.direction] ?? FLY_DIRECTIONS.right;
+    const strength = animation.data?.strength ?? 1;
+    const rawProgress = dTime / animation.duration;
+    // Enter: ease-out (fast start, slows down at rest position)
+    // Exit:  ease-in  (slow start, speeds away)
+    const progress =
+      animation.type === 'enter' ? easeOutCubic(rawProgress) : easeInCubic(rawProgress);
+    const result: Record<string, number> = {};
+    for (const key in dir.from) {
+      let from = dir.from[key];
+      let to = dir.to[key];
+      if (animation.type === 'exit') {
+        from = dir.to[key];
+        to = -dir.from[key];
+      }
+      from *= strength;
+      to *= strength;
+      const start = element[key] + from;
+      const delta = element[key] + to - start;
+      result[key] = start + progress * delta;
+    }
+    return result;
+  },
+
+  // ─── NEW: flip ───────────────────────────────────────────────────────────────
+  // Simulates a 3-D card flip by collapsing width (or height) to zero at the
+  // mid-point, then expanding it again.  Enter: collapsed → full.
+  // Exit: full → collapsed.  axis: 'x' (horizontal) | 'y' (vertical).
+  flip: ({ dTime, element, animation }) => {
+    const axis   = animation.data?.axis ?? 'x';
+    const progress = dTime / animation.duration;
+    // t goes 0→1 for enter, 1→0 for exit
+    const t = animation.type === 'enter' ? progress : 1 - progress;
+
+    if (axis === 'x') {
+      const newWidth = Math.max(0, element.width * t);
+      const newX     = element.x + (element.width - newWidth) / 2;
+      return { width: newWidth, x: newX };
+    } else {
+      const newHeight = Math.max(0, element.height * t);
+      const newY      = element.y + (element.height - newHeight) / 2;
+      return { height: newHeight, y: newY };
+    }
   },
 
   zoom: ({ dTime, element, animation }) => {
@@ -170,6 +235,40 @@ export const animations: Record<string, AnimationFn> = {
       cropY: Math.max(0, Math.min(1 - cropH, newCropY + shake * cropH)),
       cropWidth: cropW,
       cropHeight: cropH,
+    };
+  },
+
+  // ─── NEW: shake (loop) ───────────────────────────────────────────────────────
+  // Rapid horizontal (or vertical) oscillation.  axis: 'x' | 'y'.
+  shake: ({ dTime, element, animation }) => {
+    const strength  = animation.data?.strength ?? 1;
+    const axis      = animation.data?.axis ?? 'x';
+    const amplitude = 12 * strength;
+    const frequency = 6; // full cycles per second
+    const offset    = Math.sin((dTime / 1000) * frequency * 2 * Math.PI) * amplitude;
+    return axis === 'x'
+      ? { x: element.x + offset }
+      : { y: element.y + offset };
+  },
+
+  // ─── NEW: pulse (loop) ───────────────────────────────────────────────────────
+  // Smooth scale-up / scale-down heartbeat.
+  pulse: ({ dTime, element, animation }) => {
+    const strength   = animation.data?.strength ?? 1;
+    const halfPeriod = animation.duration / 2;
+    const phase      = (dTime % animation.duration) / halfPeriod;
+    const t          = phase <= 1 ? phase : 2 - phase;
+    // ease the pulse with a sine curve
+    const easedT     = Math.sin(t * Math.PI / 2);
+    const scale      = 1 + 0.25 * strength * easedT;
+    const dW         = element.width  * (scale - 1);
+    const dH         = element.height * (scale - 1);
+    return {
+      x:        element.x - dW / 2,
+      y:        element.y - dH / 2,
+      width:    element.width  * scale,
+      height:   element.height * scale,
+      fontSize: element.fontSize * scale,
     };
   },
 };
