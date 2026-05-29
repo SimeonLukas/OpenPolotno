@@ -807,114 +807,39 @@ async exportVideo({
   fileName,
   fps = 30,
   pixelRatio = 1,
-  bitrate = 8_000_000,
+  allPages = true,
+  designId,
+  apiBase = '/api',
 }: {
   fileName?: string;
   fps?: number;
   pixelRatio?: number;
-  bitrate?: number;
+  allPages?: boolean;
+  designId?: string;
+  apiBase?: string;
 } = {}) {
-  if (!window.isSecureContext || typeof VideoEncoder === 'undefined' || typeof VideoFrame === 'undefined') {
-    throw new Error('Video-Export benötigt HTTPS oder localhost und WebCodecs-Unterstützung.');
+  const body: Record<string, any> = { format: 'mp4', fps, pixelRatio, allPages }
+
+  if (designId) {
+    body.designId = designId
+  } else {
+    // kein gespeichertes Design → aktuellen Store-Zustand mitschicken
+    body.designJson = (self as any).toJSON()
   }
 
-  const width = Math.round(self.width * pixelRatio);
-  const height = Math.round(self.height * pixelRatio);
-  const frameDelay = 1000 / fps;
-  const frameCount = Math.ceil((self as any).duration / frameDelay);
+  const response = await fetch(`${apiBase}/render`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
 
-  const seekAllVideos = async (timeMs: number) => {
-    const pageId = (self as any).activePage?.id;
-    const stages = Konva.stages.filter((s: any) => s.getAttr('pageId') === pageId);
-    if (!stages.length) return;
-
-    const videos = (stages[0].find('Image') as any[])
-      .map((node: any) => node.image?.() ?? node.getAttr('image'))
-      .filter((el: any) => el instanceof HTMLVideoElement);
-
-    await Promise.all(videos.map((video: HTMLVideoElement) => {
-      video.pause();
-      if (Math.abs(video.currentTime - timeMs / 1000) < 0.01) return Promise.resolve();
-      video.currentTime = timeMs / 1000;
-      return new Promise<void>((resolve) => {
-        const onSeeked = () => {
-          video.removeEventListener('seeked', onSeeked);
-          clearTimeout(fallback);
-          resolve();
-        };
-        const fallback = setTimeout(resolve, 30);
-        video.addEventListener('seeked', onSeeked);
-      });
-    }));
-  };
-
-  const target = new BufferTarget();
-  const output = new Output({
-    format: new Mp4OutputFormat({ fastStart: 'in-memory' }),
-    target,
-  });
-
-  // ✅ Korrekte VideoSource mit Mediabunny
-  const videoSource = new VideoSampleSource({
-    codec: 'avc',
-    bitrate,
-    width,
-    height,
-    frameRate: fps,
-  });
-
-  output.addVideoTrack(videoSource);
-
-  await output.start();
-
-  for (let i = 0; i < frameCount; i++) {
-    const time = i * frameDelay;
-
-    (self as any).setCurrentTime(time);
-    (self as any).checkActivePage();
-
-    await new Promise<void>((r) =>
-      requestAnimationFrame(() => requestAnimationFrame(() => r())),
-    );
-
-    await seekAllVideos(time);
-
-    const pageId = (self as any).activePage?.id;
-    const frameCanvas = await (self as any)._toCanvas({
-      pixelRatio,
-      pageId,
-      _skipTimeout: true,
-    });
-
-    // ✅ VideoFrame aus Canvas erstellen
-    const bitmap = await createImageBitmap(frameCanvas);
-    const videoFrame = new VideoFrame(bitmap, {
-      timestamp: Math.round(time * 1000),
-      duration: Math.round(frameDelay * 1000),
-    });
-
-    bitmap.close();
-    Konva.Util.releaseCanvas(frameCanvas);
-
-    // ✅ VideoFrame in VideoSample konvertieren (WICHTIG!) [web:54]
-    const videoSample = new VideoSample(videoFrame);
-
-    // ✅ VideoSample mit Timestamp in Sekunden (nicht Millisekunden!) [web:54]
-    await videoSource.add(videoSample, {
-      timestamp: time, // Sekunden, nicht Millisekunden!
-      duration: frameDelay / 1000, // Sekunden
-      keyFrame: i % (fps * 2) === 0,
-    });
-
-    videoFrame.close();
-    videoSample.close(); // ✅ VideoSample nach Verwendung schließen [web:52]
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: response.statusText }))
+    throw new Error(`Server-Export fehlgeschlagen: ${err.error}`)
   }
 
-  await output.finalize();
-  (self as any).stop();
-
-  const blob = new Blob([target.buffer], { type: 'video/mp4' });
-  downloadFile(URL.createObjectURL(blob), fileName || 'video.mp4');
+  const blob = await response.blob()
+  downloadFile(URL.createObjectURL(blob), fileName || 'video.mp4')
 },
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
