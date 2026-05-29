@@ -805,42 +805,52 @@ export const Store = types
     },
 async exportVideo({
   fileName,
+  format = 'mp4',
   fps = 30,
   pixelRatio = 1,
   allPages = true,
   designId,
   apiBase = '/api',
 }: {
-  fileName?: string;
-  fps?: number;
-  pixelRatio?: number;
-  allPages?: boolean;
-  designId?: string;
-  apiBase?: string;
+  fileName?: string
+  format?: 'mp4' | 'webm'
+  fps?: number
+  pixelRatio?: number
+  allPages?: boolean
+  designId?: string
+  apiBase?: string
 } = {}) {
-  const body: Record<string, any> = { format: 'mp4', fps, pixelRatio, allPages }
+  const body: Record<string, any> = { format, fps, pixelRatio, allPages }
 
   if (designId) {
     body.designId = designId
   } else {
-    // kein gespeichertes Design → aktuellen Store-Zustand mitschicken
     body.designJson = (self as any).toJSON()
   }
 
-  const response = await fetch(`${apiBase}/render`, {
+  const res = await fetch(`${apiBase}/render`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({ error: response.statusText }))
-    throw new Error(`Server-Export fehlgeschlagen: ${err.error}`)
+  if (!res.ok) {
+    let msg = `Export failed (${res.status})`
+    try {
+      const err = await res.json()
+      if (err?.error) msg = err.error
+    } catch {}
+    throw new Error(msg)
   }
 
-  const blob = await response.blob()
-  downloadFile(URL.createObjectURL(blob), fileName || 'video.mp4')
-},
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = fileName || `design.${format}`
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
 
     async toHTML({ elementHook }: { elementHook?: Function } = {}): Promise<string> {
       return jsonToHTML({ json: (self as any).toJSON(), elementHook });
