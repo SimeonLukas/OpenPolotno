@@ -39,6 +39,17 @@ pauseIcon.src = svgUtils.svgToURL(`
   </svg>
 `);
 
+// SVG fit-to-canvas icon
+const fitIcon = new window.Image();
+fitIcon.src = svgUtils.svgToURL(`
+  <svg width="800px" height="800px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="3" y="3" width="18" height="18" rx="2" stroke="white" stroke-opacity="0.6" stroke-width="2"/>
+  <rect x="3" y="3" width="18" height="18" rx="2" stroke="#323232" stroke-width="2"/>
+  <path d="M8 12H16M12 8V16" stroke="white" stroke-opacity="0.6" stroke-width="2" stroke-linecap="round"/>
+  <path d="M8 12H16M12 8V16" stroke="#323232" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+`);
+
 function downscaleCanvas(
   canvas: HTMLCanvasElement,
   scale: number,
@@ -421,7 +432,10 @@ export const VideoElement = observer(({ element, store }: Props) => {
   }, [(element as any).page._exportingOrRendering, videoEl, (element as any).id]);
 
   let { cropX, cropY, cropWidth, cropHeight } = element as any;
-  if (videoStatus !== 'loaded') { cropX = cropY = 0; cropWidth = cropHeight = 1; }
+  // FIX: Reset crop until native dimensions are available to prevent distorted rendering
+  // while the video metadata is still loading.
+  const nativeDimensionsKnown = nativeVideoW > 0 && nativeVideoH > 0;
+  if (videoStatus !== 'loaded' || !nativeDimensionsKnown) { cropX = cropY = 0; cropWidth = cropHeight = 1; }
 
   const nativeW = nativeVideoW || (mediaEl as any).width || 1;
   const nativeH = nativeVideoH || (mediaEl as any).height || 1;
@@ -440,6 +454,44 @@ export const VideoElement = observer(({ element, store }: Props) => {
 
   const cropRect = { x: nativeW * cropX, y: nativeH * cropY, width: drawW, height: drawH };
   const cornerRadius: number = (element as any).cornerRadius ?? 0;
+
+  // ─── Fit-to-canvas handler ─────────────────────────────────────────────────
+  // Scales the video element to fill the page proportionally (object-fit: contain).
+  const handleFitToCanvas = React.useCallback(() => {
+    if (!nativeDimensionsKnown) return;
+    const page = (element as any).page;
+    const pageW: number = page.width;
+    const pageH: number = page.height;
+    const videoAspect = nativeVideoW / nativeVideoH;
+    const pageAspect = pageW / pageH;
+
+    let newW: number, newH: number;
+    if (videoAspect >= pageAspect) {
+      // Video is wider than the page → constrain by width
+      newW = pageW;
+      newH = pageW / videoAspect;
+    } else {
+      // Video is taller → constrain by height
+      newH = pageH;
+      newW = pageH * videoAspect;
+    }
+
+    const newX = (pageW - newW) / 2;
+    const newY = (pageH - newH) / 2;
+
+    (element as any).set({
+      x: newX,
+      y: newY,
+      width: newW,
+      height: newH,
+      // Reset crop so the full video is visible
+      cropX: 0,
+      cropY: 0,
+      cropWidth: 1,
+      cropHeight: 1,
+    });
+  }, [nativeDimensionsKnown, nativeVideoW, nativeVideoH, element]);
+  // ──────────────────────────────────────────────────────────────────────────
 
   const [croppedImage, redrawCrop] = useCornerRadiusAndCrop(
     element,
@@ -596,6 +648,10 @@ export const VideoElement = observer(({ element, store }: Props) => {
   const isListening = (element as any).selectable || (store as any).role === 'admin';
   const isTouch = isTouchDevice();
 
+  // Fit-button: show when selected, video loaded, and not in crop mode
+  const showFitButton = isSelected && nativeDimensionsKnown && !(element as any)._cropModeEnabled && !(store as any).isPlaying;
+  const fitBtnSize = 30 / (store as any).scale;
+
   return React.createElement(
     React.Fragment,
     null,
@@ -704,6 +760,24 @@ export const VideoElement = observer(({ element, store }: Props) => {
         onClick: () => setIsPlaying(!isPlaying),
         onTap: () => setIsPlaying(!isPlaying),
       }),
+      // ── Fit-to-canvas button ─────────────────────────────────────────────
+      // Shown bottom-right of the video when selected and video is loaded.
+      // Clicking scales the element to fill the page proportionally (contain).
+      showFitButton && React.createElement(Image as any, {
+        image: fitIcon,
+        x: (element as any).a.x,
+        y: (element as any).a.y,
+        // Position: top-right corner of the element
+        offsetX: -(element as any).a.width + fitBtnSize + 8 / (store as any).scale,
+        offsetY: -8 / (store as any).scale,
+        rotation: (element as any).a.rotation,
+        width: fitBtnSize,
+        height: fitBtnSize,
+        hideInExport: true,
+        onClick: handleFitToCanvas,
+        onTap: handleFitToCanvas,
+      }),
+      // ────────────────────────────────────────────────────────────────────
       (element as any)._cropModeEnabled && React.createElement(
         Portal,
         { selector: '.page-abs-container', enabled: true },
