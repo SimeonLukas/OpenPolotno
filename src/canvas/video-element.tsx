@@ -460,18 +460,19 @@ export const VideoElement = observer(({ element, store }: Props) => {
   const handleFitToCanvas = React.useCallback(() => {
     if (!nativeDimensionsKnown) return;
     const page = (element as any).page;
-    const pageW: number = page.width;
-    const pageH: number = page.height;
+    // Use computedWidth/computedHeight (same as page.tsx uses throughout)
+    const pageW: number = page.computedWidth ?? page.width ?? 1;
+    const pageH: number = page.computedHeight ?? page.height ?? 1;
     const videoAspect = nativeVideoW / nativeVideoH;
     const pageAspect = pageW / pageH;
 
     let newW: number, newH: number;
     if (videoAspect >= pageAspect) {
-      // Video is wider than the page → constrain by width
+      // Wider video → fill width, letterbox top/bottom
       newW = pageW;
       newH = pageW / videoAspect;
     } else {
-      // Video is taller → constrain by height
+      // Taller video → fill height, pillarbox left/right
       newH = pageH;
       newW = pageH * videoAspect;
     }
@@ -484,7 +485,7 @@ export const VideoElement = observer(({ element, store }: Props) => {
       y: newY,
       width: newW,
       height: newH,
-      // Reset crop so the full video is visible
+      rotation: 0,
       cropX: 0,
       cropY: 0,
       cropWidth: 1,
@@ -761,21 +762,23 @@ export const VideoElement = observer(({ element, store }: Props) => {
         onTap: () => setIsPlaying(!isPlaying),
       }),
       // ── Fit-to-canvas button ─────────────────────────────────────────────
-      // Shown bottom-right of the video when selected and video is loaded.
-      // Clicking scales the element to fill the page proportionally (contain).
+      // Shown at the top-right of the video when selected and loaded.
+      // Mirrors the play-button placement pattern (x=a.x, y=a.y + negative offsets).
       showFitButton && React.createElement(Image as any, {
         image: fitIcon,
         x: (element as any).a.x,
         y: (element as any).a.y,
-        // Position: top-right corner of the element
+        // offsetX negative → shifts right:  -(width - margin - btnSize) places it at right edge
         offsetX: -(element as any).a.width + fitBtnSize + 8 / (store as any).scale,
+        // offsetY negative → shifts down by margin only (top edge)
         offsetY: -8 / (store as any).scale,
         rotation: (element as any).a.rotation,
         width: fitBtnSize,
         height: fitBtnSize,
         hideInExport: true,
-        onClick: handleFitToCanvas,
-        onTap: handleFitToCanvas,
+        listening: true,
+        onClick: (e: any) => { e.cancelBubble = true; handleFitToCanvas(); },
+        onTap: (e: any) => { e.cancelBubble = true; handleFitToCanvas(); },
       }),
       // ────────────────────────────────────────────────────────────────────
       (element as any)._cropModeEnabled && React.createElement(
